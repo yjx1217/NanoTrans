@@ -1,0 +1,26 @@
+Prerequisite for NanoTrans
+
+#######################################################
+# Hardware, operating system and network requirements
+#######################################################
+NanoTrans is designed for a desktop or computing server running an x86-64-bit Linux operating system. Multithreaded processors are preferred to speed up the process since many modules support multithreaded processing. A stable internet connection is required for its installation. 
+
+########################
+# Software requirements
+########################
+* bash (https://www.gnu.org/software/bash/)
+* bzip2 and libbz2-dev (http://www.bzip.org/)
+* curl (https://curl.haxx.se/)
+* gcc and g++ (https://gcc.gnu.org/)
+* git (https://git-scm.com/)
+* GNU make (https://www.gnu.org/software/make/)
+* gzip (https://www.gnu.org/software/gzip/)
+* libopenssl-devel
+* libcurl-devel
+* java runtime environment (JRE) v1.8.0 (https://www.java.com)
+* perl v5.12 or newer (https://www.perl.org/)
+* tar (https://www.gnu.org/software/tar/)
+* unzip (http://infozip.sourceforge.net/UnZip.html)
+* wget (https://www.gnu.org/software/wget/)
+* zlib and zlib-devel (https://zlib.net/)
+* xz and xz-devel (https://tukaani.org/xz/)
