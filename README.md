@@ -14,7 +14,7 @@ Nanopore direct-RNA sequencing (DRS) provides the direct access to native RNA st
 </div>
 
 <p align="center">
-  <img src="https://github.com/yjx1217/NanoTrans/blob/master/NanoTrans.overview.png" alt="NanoTrans_overview" width="800" height="851"/>
+  <img src="https://github.com/yjx1217/NanoTrans/blob/main/NanoTrans.overview.png" alt="NanoTrans_overview" width="800" height="851"/>
 </p>
 
 Under the hood, a series of task-specific modules are provided to carry out the full workflow of NanoTrans:
