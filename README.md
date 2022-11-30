@@ -38,7 +38,7 @@ Under the hood, a series of task-specific modules are provided to carry out the 
 
 
 ## Citation
-Fan Wang, Xinxin Zhang, Li Zhang, Jing Li, Jia-Xing Yue. (2022) NanoTrans: an integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing data. BioRxiv. (https://)
+Fan Wang, Xinxin Zhang, Li Zhang, Jing Li, Jia-Xing Yue. (2022) NanoTrans: an integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing. BioRxiv. (doi: https://doi.org/10.1101/2022.11.29.518309)
 
 
 ## License
