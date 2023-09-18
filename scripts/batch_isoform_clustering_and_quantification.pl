@@ -14,9 +14,6 @@ use Cwd;
 ##############################################################
 
 my $NANOTRANS_HOME = $ENV{NANOTRANS_HOME};
-my $minimap2_dir = $ENV{minimap2_dir};
-my $bedtools_dir = $ENV{bedtools_dir};
-my $samtools_dir = $ENV{samtools_dir};
 my $flair_dir = $ENV{flair_dir};
 my $sample_table = "Master_Sample_Table.txt";
 my $batch_id;
@@ -122,6 +119,7 @@ my $basecalled_fastq_file_array_list = join " ", @basecalled_fastq_file_array;
 my $basecalled_fast5_dir_array_list = join " ", @basecalled_fast5_dir_array;
 my $aln_correction_output_array_list = join " ", @aln_correction_output_array;
 
+
 system("cat $aln_correction_output_array_list > $batch_id.all_samples_combined.flair_all_corrected.bed");
 # generate reads_manifest.tsv 
 my $manifest_file = "$batch_id.all_samples_combined.reads_manifest.tsv";
@@ -132,13 +130,16 @@ foreach my $sample_id (@sample_table) {
 }
 
 if ($debug eq "no") {
-    system("$flair_dir/flair collapse -t $threads -q $batch_id.all_samples_combined.flair_all_corrected.bed -g $ref_genome_file -f $base_dir/$ref_dir/ref.genome.gtf -m $minimap2_dir/minimap2 -b $bedtools_dir/bedtools -sam $samtools_dir/samtools -r $basecalled_fastq_file_array_list --isoformtss --no_redundant none --generate_map --annotation_reliant generate --quality $min_mapping_quality -o $batch_id.all_samples_combined.flair_all_collapsed --temp_dir ./tmp");
+    system("$flair_dir/flair collapse -t $threads -q $batch_id.all_samples_combined.flair_all_corrected.bed -g $ref_genome_file -f $base_dir/$ref_dir/ref.genome.gtf -r $basecalled_fastq_file_array_list --isoformtss --no_redundant none --generate_map --annotation_reliant generate --quality $min_mapping_quality -o $batch_id.all_samples_combined.flair_all_collapsed --temp_dir ./tmp");
 } else {
-    system("$flair_dir/flair collapse -t $threads -q $batch_id.all_samples_combined.flair_all_corrected.bed -g $ref_genome_file -f $base_dir/$ref_dir/ref.genome.gtf -m $minimap2_dir/minimap2 -b $bedtools_dir/bedtools -sam $samtools_dir/samtools -r $basecalled_fastq_file_array_list --isoformtss --no_redundant none --generate_map --annotation_reliant generate --quality $min_mapping_quality -o $batch_id.all_samples_combined.flair_all_collapsed --keep_intermediate --temp_dir ./tmp");
+    system("$flair_dir/flair collapse -t $threads -q $batch_id.all_samples_combined.flair_all_corrected.bed -g $ref_genome_file -f $base_dir/$ref_dir/ref.genome.gtf -r $basecalled_fastq_file_array_list --isoformtss --no_redundant none --generate_map --annotation_reliant generate --quality $min_mapping_quality -o $batch_id.all_samples_combined.flair_all_collapsed --keep_intermediate --temp_dir ./tmp");
 }
 
 print "\n[$local_time] processing all samples from the Batch $batch_id for isoform quantification ..\n";
-system("$flair_dir/flair quantify -m $minimap2_dir/minimap2 -sam $samtools_dir/samtools -t $threads --quality $min_mapping_quality -r $manifest_file -i $batch_id.all_samples_combined.flair_all_collapsed.isoforms.fa -o $batch_id.all_samples_combined.counts_matrix.tsv"); 
+system("$flair_dir/flair quantify -t $threads --quality $min_mapping_quality -r $manifest_file -i $batch_id.all_samples_combined.flair_all_collapsed.isoforms.fa -o $batch_id.all_samples_combined"); 
+
+# fix: output count matrix name change caused by flair2 quantify module
+system("cp $batch_id.all_samples_combined.counts.tsv $batch_id.all_samples_combined.counts_matrix.tsv");
 
 print "\n[$local_time] processing all samples from the Batch $batch_id for productivity prediction ..\n";
 system("$flair_dir/predictProductivity --append_column --longestORF -i $batch_id.all_samples_combined.flair_all_collapsed.isoforms.bed -g $ref_genome_annotation_file -f $ref_genome_file > $batch_id.all_samples_combined.flair_all_collapsed.isoforms.with_productivity.bed");
