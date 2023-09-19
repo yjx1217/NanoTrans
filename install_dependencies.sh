@@ -189,7 +189,7 @@ SCIPY_VERSION="1.2.1"
 NANOPOLISH_VERSION="0.14.0" # released on 2022.05.25
 NANOPOLISH_GITHUB_VERSION="07cb03d"
 
-FLAIR_VERSION="1.6.3" # 
+FLAIR_VERSION="2.0.0" # 
 
 GFFREAD_VERSION="0.12.7" # released on 2021.07.23
 GFFREAD_DOWNLOAD_URL="http://ccb.jhu.edu/software/stringtie/dl/gffread-${GFFREAD_VERSION}.Linux_x86_64.tar.gz"
