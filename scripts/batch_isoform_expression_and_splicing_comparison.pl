@@ -50,7 +50,7 @@ system("mkdir $output_dir");
 chdir("$output_dir") or die "cannot change directory to: $!\n";
 
 my $isoform_clustering_bed_file = "$base_dir/$isoform_cq_dir/$batch_id/all_samples_combined/$batch_id.all_samples_combined.flair_all_collapsed.isoforms.bed";
-my $isoform_quantification_tsv_file = "$base_dir/$isoform_cq_dir/$batch_id/all_samples_combined/$batch_id.all_samples_combined.counts.tsv";
+my $isoform_quantification_tsv_file = "$base_dir/$isoform_cq_dir/$batch_id/all_samples_combined/$batch_id.all_samples_combined.counts_matrix.tsv";
 
 if (-e $isoform_clustering_bed_file) {
     print "\nSuccessfully located the isoform clustering BED file: $isoform_clustering_bed_file\n";
@@ -138,7 +138,7 @@ if ($comparison_groups_count <= 1) {
 		print "\n[$local_time] Minimal replicate count = $min_replicate_count (>= 3). Perform between group comparison with replicate-based batch effect removal ..\n";
 		$local_time = localtime();
 		print "\n[$local_time] Detecting isoforms with differential expression ..\n";
-		system("$flair_dir/flair diffExp -t $threads -q $isoform_quantification_tsv_file -o ${batch_id}_differential_expression_output");
+		system("$flair_dir/flair diffExp -t $threads -q $isoform_quantification_tsv_file -e 5 -o ${batch_id}_differential_expression_output");
 		chdir("${batch_id}_differential_expression_output") or die "cannot change directory to: $!\n";
 		system("mv workdir/dge_stderr.txt workdir/log.txt");
 		# generate tidy result tables
