@@ -11,6 +11,7 @@ PATH=$ucsc_dir:$PATH
 batch_id="Batch_Example" # The batch_id used for the processing batch. Default = "Batch_Example".
 master_sample_table="Master_Sample_Table.$batch_id.txt" # The master sample table for the processing batch. Default = "Master_Sample_Table.$batch_id.txt".
 threads=4 # The number of threads to use. Default = 4.
+read_counts_cutoff=5 # The read count cutoff for the differentially expressed genes/isoforms table. Default = 5.
 log2foldchange_cutoff=1 # The log2 foldchange cutoff for the differential expression volcano plot. Default = 1.
 adj_p_value_cutoff=0.05 # The adjusted p-value cutoff for the differential expression volcano plot. Default = 0.05.
 debug="no" # Whether to keep intermediate files for debuging. Use "yes" if prefer to keep intermediate files, otherwise use "no". Default = "no".
@@ -30,6 +31,7 @@ perl $NANOTRANS_HOME/scripts/batch_isoform_expression_and_splicing_comparison.pl
     -sample_table $master_sample_table \
     -threads $threads \
     -isoform_cq_dir $isoform_cq_dir \
+    -read_counts_cutoff $read_counts_cutoff \
     -batch $batch_id \
     -transcript2gene_map $transcript2gene_map \
     -debug $debug

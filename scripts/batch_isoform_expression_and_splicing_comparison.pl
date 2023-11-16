@@ -24,6 +24,7 @@ my $batch_id;
 my $threads = 1;
 my $isoform_cq_dir = "./../02.Isoform_Clustering_and_Quantification";
 my $transcript2gene_map;
+my $read_counts_cutoff = 5;
 my $log2foldchange_cutoff = 1;
 my $adj_p_value_cutoff = 0.05;
 my $debug = "no";
@@ -33,6 +34,7 @@ GetOptions('sample_table|i:s' => \$sample_table,
 	   'batch_id|b:s' => \$batch_id,
 	   'isoform_cq_dir|isoform_clustering_and_quantification_dir:s' => \$isoform_cq_dir,
 	   'transcript2gene_map|x:s' => \$transcript2gene_map,
+	   'read_counts_cutoff|e:i' => \$read_counts_cutoff,
 	   'log2foldchange_cutoff|lfc:s' => \$log2foldchange_cutoff,
 	   'adj_p_value_cutoff|p:s' => \$adj_p_value_cutoff,
 	   'debug|d:s' => \$debug);
@@ -138,7 +140,7 @@ if ($comparison_groups_count <= 1) {
 		print "\n[$local_time] Minimal replicate count = $min_replicate_count (>= 3). Perform between group comparison with replicate-based batch effect removal ..\n";
 		$local_time = localtime();
 		print "\n[$local_time] Detecting isoforms with differential expression ..\n";
-		system("$flair_dir/flair diffExp -t $threads -q $isoform_quantification_tsv_file -e 5 -o ${batch_id}_differential_expression_output");
+		system("$flair_dir/flair diffExp -t $threads -q $isoform_quantification_tsv_file -e ${read_counts_cutoff} -o ${batch_id}_differential_expression_output");
 		chdir("${batch_id}_differential_expression_output") or die "cannot change directory to: $!\n";
 		system("mv workdir/dge_stderr.txt workdir/log.txt");
 		# generate tidy result tables
