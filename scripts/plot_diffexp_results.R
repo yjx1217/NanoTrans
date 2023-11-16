@@ -103,8 +103,12 @@ data_lite_for_volcanoplot$class[data_lite_for_volcanoplot$log2foldchange < -opt$
                                    data_lite_for_volcanoplot$adj_p_value < opt$adj_p_value_cutoff] <-
   "down"
 
-data_lite_for_volcanoplot$label <-
-  paste0(data_lite_for_volcanoplot$gene_name, ":", data_lite_for_volcanoplot$isoform_id)
+if(all(is.na(data_lite_for_volcanoplot[["isoform_id"]]))) {
+  data_lite_for_volcanoplot$label <- data_lite_for_volcanoplot$gene_name
+} else {
+  data_lite_for_volcanoplot$label <-
+    paste0(data_lite_for_volcanoplot$gene_name, ":", data_lite_for_volcanoplot$isoform_id)
+}
 
 data_lite_for_volcanoplot$label[data_lite_for_volcanoplot$class == "no"] <-
   NA
@@ -120,23 +124,41 @@ p <- ggplot(data = data_lite_for_volcanoplot,
          label = label
        )) +
   geom_point(alpha = 0.3) +
-  geom_text_repel() +
+  geom_text_repel(size = 2.2, max.overlap = Inf) +
   geom_vline(
     xintercept = c(-opt$log2foldchange_cutoff, opt$log2foldchange_cutoff),
-    col = "black",
-    linetype = "dashed"
+    col = "snow3",
+    linetype = "dashed",
+    linewidth = 0.3
   ) +
   geom_hline(
     yintercept = -log10(opt$adj_p_value_cutoff),
-    col = "black",
-    linetype = "dashed"
+    col = "snow3",
+    linetype = "dashed",
+    linewidth = 0.3
   ) +
-  scale_x_continuous(limits = c(-5, 5)) +
+  annotate(
+    geom = "text",
+    x = -Inf, y = -log10(opt$adj_p_value_cutoff), label = paste0("adj. p-value = ", opt$adj_p_value_cutoff),
+    vjust = 1.1, hjust = -0.1, size = 2.5, color = "black"
+  ) +
+  scale_x_continuous(limits = c(-5, 5), breaks = seq(-5, 5, 2)) +
   scale_color_manual(values = volcanoplot_palette) +
-  ggtitle(paste0("foldchange calculation: ", comparison_group_pair_tag, "\nadj_p_value_cutoff: ", opt$adj_p_value_cutoff, "\nlog2foldchange_cutoff: ", opt$log2foldchange_cutoff, ",", -opt$log2foldchange_cutoff)) +
+  labs(
+    subtitle = comparison_group_pair_tag,
+    x = "log2(fold change)",
+    y = "-log10(adj. p-value)"
+  ) +
+  #ggtitle(paste0("foldchange calculation: ", comparison_group_pair_tag, "\nadj_p_value_cutoff: ", opt$adj_p_value_cutoff, "\nlog2foldchange_cutoff: ", opt$log2foldchange_cutoff, ",", -opt$log2foldchange_cutoff)) +
   theme_bw() +
-  theme(legend.position = "none")
-ggsave(paste0(opt$output_prefix, ".volcanoplot.pdf"), p)
+  theme(
+    text = element_text(size = 9),
+    panel.grid = element_blank(),
+    axis.ticks = element_line(linewidth = 0.3),
+    aspect.ratio = 1,
+    legend.position = "none"
+  )
+ggsave(paste0(opt$output_prefix, ".volcanoplot.pdf"), p, width = 3.5, height = 3.5)
 
 
 
