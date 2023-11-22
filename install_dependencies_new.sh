@@ -611,9 +611,6 @@ if [ -z $(check_installed $flair_dir) ]; then
     rm bam2Bed12.content
     # turn on pdf output for plot_isoform_usage
     cp $NANOTRANS_HOME/misc/plot_isoform_usage_for_pdf plot_isoform_usage
-    # fix a bug in subset_unassigned_reads.py
-    cd $build_dir/flair_conda_env/lib/python3.9/site-packages/flair
-    sed -i -e "25s/$/[:line[3].rfind(';')]/" -e "27s/$/[:line[9].rfind(';')]/" subset_unassigned_reads.py
     note_installed $flair_dir
 fi
 
