@@ -38,7 +38,7 @@ my %filtered_count = ();
 parse_filtered_count_matrix_file($filtered_count_matrix_fh, \%filtered_count);
 
 #print "input=$input\n";
-my ($comparison_group_a, $comparison_group_b) = ($input =~ /(?:die|dge|diu)\_([^\-]+)_v_([^\-]+)\_(?:deseq2|drimseq)/);
+my ($comparison_group_a, $comparison_group_b) = ($input =~ /(?:genes_deseq2|isoforms_deseq2|isoforms_drimseq)\_([^\-]+)_v_([^\-]+)\_(?:results)/);
 # print "comparison_group_a: $comparison_group_a\n";
 # print "comparison_group_b: $comparison_group_b\n";
 
