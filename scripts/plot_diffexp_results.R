@@ -124,7 +124,7 @@ p <- ggplot(data = data_lite_for_volcanoplot,
          label = label
        )) +
   geom_point(alpha = 0.3) +
-  geom_text_repel(size = 2.2, max.overlap = Inf) +
+  geom_text_repel(size = 2) +
   geom_vline(
     xintercept = c(-opt$log2foldchange_cutoff, opt$log2foldchange_cutoff),
     col = "snow3",
@@ -158,7 +158,7 @@ p <- ggplot(data = data_lite_for_volcanoplot,
     aspect.ratio = 1,
     legend.position = "none"
   )
-ggsave(paste0(opt$output_prefix, ".volcanoplot.pdf"), p, width = 3.5, height = 3.5)
+ggsave(paste0(opt$output_prefix, ".volcanoplot.pdf"), p, width = 4, height = 4)
 
 
 
