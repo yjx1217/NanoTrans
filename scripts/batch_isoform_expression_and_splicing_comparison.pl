@@ -203,8 +203,8 @@ if ($comparison_groups_count <= 1) {
 
 
 		system("$flair_dir/flair diffSplice -t $threads -i $isoform_clustering_bed_file -q $isoform_quantification_tsv_file -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw");
-		system("cp $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw.es.events.quant.tsv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw.es.events.quant.tsv.bk");
-		system("perl $NANOTRANS_HOME/scripts/fix_flair_diffSpice_id_parsing_issue.pl -i $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw.es.events.quant.tsv.bk -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw.es.events.quant.tsv");
+		system("cp $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw/diffsplice.es.events.quant.tsv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw/diffsplice.es.events.quant.tsv.bk");
+		system("perl $NANOTRANS_HOME/scripts/fix_flair_diffSpice_id_parsing_issue.pl -i $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.raw.es.events.quant.tsv.bk -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.raw.es.events.quant.tsv");
 
 		foreach my $sample_in_group_i (@{$comparison_groups{$comparison_groups[$i]}}) {
 		    foreach my $sample_in_group_j (@{$comparison_groups{$comparison_groups[$j]}}){
@@ -221,7 +221,7 @@ if ($comparison_groups_count <= 1) {
 			system("mv $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt ${batch_id}_differential_expression_output");
 			my @diff_splicing_types = qw(ir es alt3 alt5);
 			foreach my $diff_splicing_type (@diff_splicing_types) {
-			    system("$flair_dir/diffsplice_fishers_exact $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw.$diff_splicing_type.events.quant.tsv  $sample_in_group_i_tag $sample_in_group_j_tag $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.raw.txt");
+			    system("$flair_dir/diffsplice_fishers_exact $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw/diffsplice.$diff_splicing_type.events.quant.tsv  $sample_in_group_i_tag $sample_in_group_j_tag $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.raw.txt");
 			    system("perl $NANOTRANS_HOME/scripts/tidy_diffsplice_fishers_exact_output.pl -i $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.raw.txt -o $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt.tmp -x $base_dir/$transcript2gene_map");
 			    system("Rscript --vanilla $NANOTRANS_HOME/scripts/apply_p_value_fdr_adjustment.R $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt.tmp $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt");
 			    system("rm $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt.tmp");
@@ -230,8 +230,8 @@ if ($comparison_groups_count <= 1) {
 			}
 		    }
 		}
-		system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw*.tsv ${batch_id}_differential_splicing_output/intermediate_files");
-		system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw*.tsv.bk ${batch_id}_differential_splicing_output/intermediate_files");
+		system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw/*.tsv    ${batch_id}_differential_splicing_output/intermediate_files");
+		system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw/*.tsv.bk ${batch_id}_differential_splicing_output/intermediate_files");
 	    }
 	}
     }
