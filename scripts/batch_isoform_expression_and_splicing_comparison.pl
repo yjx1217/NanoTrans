@@ -196,15 +196,15 @@ if ($comparison_groups_count <= 1) {
 		$local_time = localtime();
 		print "\n[$local_time] Detecting isoforms with differential expression and splicing respectively ..\n";
 		
-		system("mkdir ${batch_id}_differential_expression_output");
-		system("mkdir ${batch_id}_differential_splicing_output");
-		system("mkdir -p ${batch_id}_differential_expression_output/intermediate_files");
-		system("mkdir -p ${batch_id}_differential_splicing_output/intermediate_files");
+		system("if [ ! -d ${batch_id}_differential_expression_output ]; then mkdir ${batch_id}_differential_expression_output; fi");
+		system("if [ ! -d ${batch_id}_differential_splicing_output ];   then mkdir ${batch_id}_differential_splicing_output  ; fi");
+		system("if [ ! -d ${batch_id}_differential_splicing_output/intermediate_files ]; then mkdir -p ${batch_id}_differential_expression_output/intermediate_files; fi");
+		system("if [ ! -d ${batch_id}_differential_splicing_output/intermediate_files ]; then mkdir -p ${batch_id}_differential_splicing_output/intermediate_files  ; fi");
 
 
 		system("$flair_dir/flair diffSplice -t $threads -i $isoform_clustering_bed_file -q $isoform_quantification_tsv_file -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw");
 		system("cp $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw/diffsplice.es.events.quant.tsv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw/diffsplice.es.events.quant.tsv.bk");
-		system("perl $NANOTRANS_HOME/scripts/fix_flair_diffSpice_id_parsing_issue.pl -i $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.raw.es.events.quant.tsv.bk -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.raw.es.events.quant.tsv");
+		system("perl $NANOTRANS_HOME/scripts/fix_flair_diffSpice_id_parsing_issue.pl -i $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw/diffsplice.es.events.quant.tsv.bk -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.raw/diffsplice.es.events.quant.tsv");
 
 		foreach my $sample_in_group_i (@{$comparison_groups{$comparison_groups[$i]}}) {
 		    foreach my $sample_in_group_j (@{$comparison_groups{$comparison_groups[$j]}}){
