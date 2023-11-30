@@ -38,8 +38,8 @@ Rscript --vanilla $NANOTRANS_HOME/scripts/tidy_filtering_kmers.R \
     -p ${cutoff_p} -l 0 -d ${cutoff_modrate} \
     -o $filtered_diffmods
 
-echo "Plotting high frequency kmers..."
-Rscript --vanilla $NANOTRANS_HOME/scripts/plot_frequency_kmers.R \
+echo "Plotting seqlogo and frequencies of kmers..."
+Rscript --vanilla $NANOTRANS_HOME/scripts/plot_seqlogo_freq_kmers.R \
     -i ${filtered_diffmods} \
     -o ${plot_topfreq_kmers}
 
