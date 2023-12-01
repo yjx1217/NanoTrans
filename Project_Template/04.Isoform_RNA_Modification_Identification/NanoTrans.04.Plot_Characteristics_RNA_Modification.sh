@@ -8,7 +8,7 @@ PATH=$ucsc_dir:$PATH
 
 #######################################
 # set project-specific variables
-batch_id="Batch_Dataset2" # The batch_id used for the processing batch. Default = "Batch_Example".
+batch_id="Batch_Example" # The batch_id used for the processing batch. Default = "Batch_Example".
 master_sample_table="Master_Sample_Table.$batch_id.txt" # The master sample table for the processing batch. Default = "Master_Sample_Table.$batch_id.txt".
 #threads=4 # The number of threads to use. Default = 4.
 #top_n=20 # The number of genes with top differential RNA modification for plotting. Default = 20.
@@ -25,7 +25,8 @@ cutoff_modrate=0.5 # The threshold of the lowest modified rate change between th
  filtered_diffmods="./${batch_id}/all_samples_combined/${batch_id}.rna_modification.majority_direction_kmer_diffmod.table.tidy.filtered.txt"
       abs_diffmods="./${batch_id}/all_samples_combined/${batch_id}.rna_modification.majority_direction_kmer_diffmod.table.tidy.filtered.abs.txt"
 diffmods_flank_bed="./${batch_id}/all_samples_combined/${batch_id}.rna_modification.majority_direction_kmer_diffmod.table.tidy.filtered.flank.bed"
-plot_topfreq_kmers="./${batch_id}/all_samples_combined/plot_top10_freq_kmers.pdf"
+plot_seqlogo_kmers="./${batch_id}/all_samples_combined/plot_seqlogo_kmers.pdf"
+plot_topfreq_kmers="./${batch_id}/all_samples_combined/plot_frequencies_kmers.pdf"
 plot_metaStopCodon="./${batch_id}/all_samples_combined/plot_sites_stop_codon_metaplot.pdf"
  plot_genomicFeats="./${batch_id}/all_samples_combined/plot_sites_genomic_feature.pdf"
   plot_overlap_pas="./${batch_id}/all_samples_combined/plot_overlap_mod_pas.pdf"
@@ -40,8 +41,9 @@ Rscript --vanilla $NANOTRANS_HOME/scripts/tidy_filtering_kmers.R \
 
 echo "Plotting seqlogo and frequencies of kmers..."
 Rscript --vanilla $NANOTRANS_HOME/scripts/plot_seqlogo_freq_kmers.R \
-    -i ${filtered_diffmods} \
-    -o ${plot_topfreq_kmers}
+    -i  ${filtered_diffmods}  \
+    -s ${plot_seqlogo_kmers} \
+    -f ${plot_topfreq_kmers} 
 
 # prep | transform relative coordinates in diffmod table to absolute coordinates
 echo "Transforming relative coordinates of kmers to absolute..."
@@ -79,3 +81,19 @@ python $NANOTRANS_HOME/scripts/plot_overlaps_modification_polyA.py \
     -o ${plot_overlap_pas}
 
 source $miniconda3_dir/deactivate
+
+
+############################
+# checking bash exit status
+if [[ $? -eq 0 ]]
+then
+    echo ""
+    echo "#########################################################################"
+    echo ""
+    echo "NanoTrans message: This bash script has been successfully processed! :)"
+    echo ""
+    echo "#########################################################################"
+    echo ""
+    exit 0
+fi
+############################

@@ -7,6 +7,8 @@ import pysam
 from collections import Counter
 import matplotlib.pyplot as plt
 
+plt.rcParams['pdf.fonttype'] = 42
+plt.rcParams['font.family'] = 'Arial'
 # ============================================================================ #
 # parse args
 
@@ -65,14 +67,15 @@ def get_stop_profiles(tabix_file, use_score=False, use_strand=True):
 der_site_stop_profiles, n_records_der = get_stop_profiles(args.searchbed)
 # ============================================================================ #
 # plot
-fig, ax = plt.subplots(figsize=(6, 3))
+fig, ax = plt.subplots(figsize=(5, 3))
 ax.plot(np.sum(der_site_stop_profiles, axis=0), color="steelblue", lw=2, zorder=1)
 #ax2 = ax.twinx()
-ax.axvline(500, color='#555555', ls='--', lw=3, zorder=-1)
+ax.axvline(500, color='#555555', ls='--', lw=2, zorder=-1)
 ax.set_xticks([250, 500, 750])
 #plt.setp(ax2.get_yticklabels(), color="blue")
-ax.set_xticklabels(['-250nt', 'Stop\nCodon', '+250nt'])
+ax.set_xticklabels(['-250nt', 'StopCodon', '+250nt'])
+ax.set_xlabel('    ')
 ax.set_ylabel('Error sites (frequency)', color="steelblue")
 ax.set_xlim(200, 800)
 plt.tight_layout()
-plt.savefig(args.outname)
+plt.savefig(args.outname, format = "pdf")

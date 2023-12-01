@@ -7,7 +7,8 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 import argparse
-
+plt.rcParams['pdf.fonttype'] = 42
+plt.rcParams['font.family'] = 'Arial'
 # ============================================================================ #
 # parse args
 
@@ -135,19 +136,21 @@ mod_feature_counts, n_records_der = count_mismatches_in_features(
 fig, ax = plt.subplots(figsize=(3, 3))
 count_by_name = mod_feature_counts.reset_index()
 
-plt.bar(count_by_name['index'], count_by_name[0], color ='#0072b2', width = 0.4)
+df_counts_features = pd.DataFrame(
+   dict(
+      names=count_by_name['index'],
+      counts=count_by_name[0]
+   )
+)
 
-#sns.barplot(
-#    x='index',
-#    y=0,
-#    data=mod_feature_counts.reset_index(),
-#    color="#0072b2",
-#    order=['upstream', '5utr', 'cds', '3utr', 'downstream'],
-#    ax=ax
-#)
+df_counts_features_main = df_counts_features[df_counts_features.names.isin(['upstream','5utr', 'cds', '3utr', 'downstream'])]
+df_counts_features_main["names"] = pd.Categorical(df_counts_features_main["names"], categories = ['upstream','5utr', 'cds', '3utr', 'downstream'])
+df_counts_features_main.sort_values(by = "names")
+
+#plt.bar(count_by_name['index'], count_by_name[0], color ='steelblue', width = 0.5)
+plt.bar('names', 'counts', data=df_counts_features_main, color ='steelblue', width = 0.5)
 plt.setp(ax.get_xticklabels(), rotation=35, ha='right')
-#ax.set_xlabel('')
-#ax.set_xticklabels(['Upstream', '5\'UTR', 'CDS', '3\'UTR', 'Downstream'])
+ax.set_xticklabels(['Upstream', '5\'UTR', 'CDS', '3\'UTR', 'Downstream'])
 ax.set_ylabel('Error sites per kb')
 plt.tight_layout()
-plt.savefig(args.outname)
+plt.savefig(args.outname, format = "pdf")

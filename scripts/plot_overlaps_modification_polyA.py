@@ -2,7 +2,7 @@
 # info
 
 # date: 231008
-# desc: reproduce the results of 'pas strength at m6a sites'
+# desc: overlaps between RNA modification & polyA sites
 # refs: "https://github.com/bartongroup/Simpson_Barton_Nanopore_1/blob/master/notebooks/18_pas_strength_at_m6a_sites.ipynb"
 
 # ============================================================================ #
@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 import pysam
 from ushuffle import shuffle as ushuffle
 
+plt.rcParams['pdf.fonttype'] = 42
+plt.rcParams['font.family'] = 'Arial'
 # ============================================================================ #
 # parse args
 
@@ -130,21 +132,21 @@ pas_enrichment, m6a_enrichment, seqs = get_pas_enrichment(
 # plot
 
 pal = ['#0072b2', '#d55e00', '#009e73', '#f0e442', '#cc79a7']
-fig, ax = plt.subplots(figsize=(8, 5))
+fig, ax = plt.subplots(figsize=(5, 3))
 
 for k, v in pas_enrichment.items():
     ax.plot(np.arange(-51, 50), v.mean(0), color='#cccccc', zorder=-1)
-ax.plot(np.arange(-51, 50), pas_enrichment['AATAAA'].mean(0), label='AATAAA', color=pal[0],lw=3, zorder=5)
-ax.plot(np.arange(-51, 50), pas_enrichment['TATAAA'].mean(0), label='TATAAA', color=pal[1],lw=3, zorder=4)
-ax.plot(np.arange(-51, 50), pas_enrichment['AACAAA'].mean(0), label='AACAAA', color=pal[2],lw=3, zorder=2)
-ax.plot(np.arange(-51, 50), pas_enrichment['AAGAAA'].mean(0), label='AAGAAA', color=pal[3],lw=3, zorder=1)
-ax.plot(np.arange(-51, 50), m6a_enrichment.mean(0), label='m6A motif', color='#252525', lw=3, zorder=0)
+ax.plot(np.arange(-51, 50), pas_enrichment['AATAAA'].mean(0), label='AATAAA',    color=pal[0],    lw=2, zorder=5)
+ax.plot(np.arange(-51, 50), pas_enrichment['TATAAA'].mean(0), label='TATAAA',    color=pal[1],    lw=2, zorder=4)
+ax.plot(np.arange(-51, 50), pas_enrichment['AACAAA'].mean(0), label='AACAAA',    color=pal[2],    lw=2, zorder=2)
+ax.plot(np.arange(-51, 50), pas_enrichment['AAGAAA'].mean(0), label='AAGAAA',    color=pal[3],    lw=2, zorder=1)
+ax.plot(np.arange(-51, 50), m6a_enrichment.mean(0),           label='m6A motif', color='#252525', lw=2, zorder=0)
 ax.legend()
 ax.set_xlabel('Distance from m6A motif (nt)')
 ax.set_ylabel('Motif enrichment\nover shuffled seqs (log2 scale)')
 ax.set_xlim(-50, 50)
 plt.tight_layout()
-plt.savefig(args.outname)
+plt.savefig(args.outname, format = "pdf")
 
 # ============================================================================ #
 # test

@@ -28,7 +28,14 @@ option_list <- list(
         metavar = "character"
     ),
     make_option(
-        c("-o", "--output"),
+        c("-s", "--output_seqlogo"),
+        type = "character",
+        default = NULL,
+        help = "output name of the kmer seqlogo, type = pdf",
+        metavar = "character"
+    ),
+    make_option(
+        c("-f", "--output_frequency"),
         type = "character",
         default = NULL,
         help = "output name of the kmer seqlogo, type = pdf",
@@ -91,13 +98,24 @@ bar_freqkmers <- ggplot(freq_kmer, aes(x = N, y = kmer, group = ifClassic)) +
       axis.title = element_blank(),
       axis.line.y.left = element_line(color = "black"),
       legend.title = element_blank(),
-      legend.key.size = unit(0.4, "cm")
+      legend.position = c(0.8, 0.2),
+      #legend.background = element_blank(),
+      legend.key.size = unit(0.4, "cm"),
+      aspect.ratio = 0.8
     )
 
 # ============================================================================ #
 # save plots
 
-pdf(file = opt$output, width = 4.5, height = 2.8)
+#pdf(file = opt$output, width = 4.5, height = 2.8)
+#  kmer_seqlogo
+#  bar_freqkmers
+#dev.off()
+pdf(file = opt$output_seqlogo,  width = 4, height = 3)
   kmer_seqlogo
+dev.off()
+
+pdf(file = opt$output_frequency, width = 3, height = 3)
   bar_freqkmers
 dev.off()
+
