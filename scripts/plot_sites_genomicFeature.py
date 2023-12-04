@@ -145,12 +145,20 @@ df_counts_features = pd.DataFrame(
 
 df_counts_features_main = df_counts_features[df_counts_features.names.isin(['upstream','5utr', 'cds', '3utr', 'downstream'])]
 df_counts_features_main["names"] = pd.Categorical(df_counts_features_main["names"], categories = ['upstream','5utr', 'cds', '3utr', 'downstream'])
-df_counts_features_main.sort_values(by = "names")
+df_counts_features_main_sorted = df_counts_features_main.sort_values(by = "names")
 
-#plt.bar(count_by_name['index'], count_by_name[0], color ='steelblue', width = 0.5)
-plt.bar('names', 'counts', data=df_counts_features_main, color ='steelblue', width = 0.5)
+new_names = {
+    "upstream": "Upstream",
+    "5utr": "5'UTR",
+    "cds": "CDS",
+    "3utr": "3'UTR",
+    "downstream": "Downstream"
+}
+df_counts_features_main_sorted["names"] = df_counts_features_main_sorted["names"].map(new_names)
+
+plt.bar('names', 'counts', data=df_counts_features_main_sorted, color ='steelblue', width = 0.5)
 plt.setp(ax.get_xticklabels(), rotation=35, ha='right')
-ax.set_xticklabels(['Upstream', '5\'UTR', 'CDS', '3\'UTR', 'Downstream'])
+#ax.set_xticklabels(['Upstream', '5\'UTR', 'CDS', '3\'UTR', 'Downstream'])
 ax.set_ylabel('Error sites per kb')
 plt.tight_layout()
 plt.savefig(args.outname, format = "pdf")
