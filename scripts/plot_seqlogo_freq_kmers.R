@@ -98,7 +98,7 @@ bar_freqkmers <- ggplot(freq_kmer, aes(x = N, y = kmer, group = ifClassic)) +
       axis.title = element_blank(),
       axis.line.y.left = element_line(color = "black"),
       legend.title = element_blank(),
-      legend.position = c(0.8, 0.2),
+      #legend.position = c(0.8, 0.2),
       #legend.background = element_blank(),
       legend.key.size = unit(0.4, "cm"),
       aspect.ratio = 0.8
@@ -115,7 +115,7 @@ pdf(file = opt$output_seqlogo,  width = 4, height = 3)
   kmer_seqlogo
 dev.off()
 
-pdf(file = opt$output_frequency, width = 3, height = 3)
+pdf(file = opt$output_frequency, width = 4, height = 3)
   bar_freqkmers
 dev.off()
 
