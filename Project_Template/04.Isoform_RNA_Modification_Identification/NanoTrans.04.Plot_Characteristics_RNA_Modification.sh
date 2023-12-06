@@ -13,7 +13,9 @@ master_sample_table="Master_Sample_Table.$batch_id.txt" # The master sample tabl
 #threads=4 # The number of threads to use. Default = 4.
 #top_n=20 # The number of genes with top differential RNA modification for plotting. Default = 20.
 cutoff_p=0.05 # The threshold of p-value to filter diffmod kmers. Default = 0.05.
+direction_to_filter_modrate="higher" # Direction to filter kmers according to differentially modified rate (twoside, higher, lower). Defaul = "twoside". 
 cutoff_modrate=0.5 # The threshold of the lowest modified rate change between the two condition. Default = 0.5.
+keep_kmers="keepA" # Whether to retain kmers whose center are A only (keepA, all). Default = "keepA".
 #debug="no" # Whether to keep intermediate files for debuging. Use "yes" if prefer to keep intermediate files, otherwise use "no". Default = "no".
 ############################################################
 # Normally no need to change the following settings.
@@ -35,8 +37,10 @@ plot_metaStopCodon="./${batch_id}/all_samples_combined/plot_sites_stop_codon_met
 echo "Filtering differentially modifed kmers..."
 Rscript --vanilla $NANOTRANS_HOME/scripts/tidy_filtering_kmers.R \
     -i $raw_diffmods \
-    -f higher \
-    -p ${cutoff_p} -l 0 -d ${cutoff_modrate} \
+    -f ${direction_to_filter_modrate} \
+    -p ${cutoff_p} \
+    -d ${cutoff_modrate} \
+    -a ${keep_kmers} \
     -o $filtered_diffmods
 
 echo "Plotting seqlogo and frequencies of kmers..."

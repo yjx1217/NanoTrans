@@ -45,11 +45,11 @@ option_list <- list(
     metavar = "numeric"
   ),
   make_option(
-    c("-l", "--lowfreq"),
-    type = "integer",
-    default = NULL,
-    help = "cutoff of kmers frequency",
-    metavar = "integer"
+    c("-a", "--centreA"),
+    type = "character",
+    default = NULL, # all, keepA
+    help = "whether to keep only kmers with centre A",
+    metavar = "character"
   ),
   make_option(
     c("-o", "--outtsv"),
@@ -114,9 +114,12 @@ if(opt$fdirection == "twoside") {
   stop("Arg -f is invalid!")
 }
 
-lowfreq.kmers <- difmods.f[, .N ,kmer][N <= lowfreq, kmer]
-difmods.f <- difmods.f[grep("^..A", kmer)] %>% 
-  .[! kmer %in% lowfreq.kmers] 
+#lowfreq.kmers <- difmods.f[, .N ,kmer][N <= lowfreq, kmer]
+if (opt$centreA == "keepA") {
+  difmods.f <- difmods.f[grep("^..A", kmer)]
+   #%>% .[! kmer %in% lowfreq.kmers] 
+}
+
 
 fwrite(difmods.f, opt$outtsv, sep = "\t")
 
