@@ -94,7 +94,7 @@ write.table(
   row.names = FALSE
 )
 
-data_lite_for_volcanoplot <- data_lite
+data_lite_for_volcanoplot <-  data_lite[data_lite[["adj_p_value"]] != 9999, ]
 data_lite_for_volcanoplot$class <- "no"
 data_lite_for_volcanoplot$class[data_lite_for_volcanoplot$log2foldchange > opt$log2foldchange_cutoff &
                                    data_lite_for_volcanoplot$adj_p_value < opt$adj_p_value_cutoff] <-

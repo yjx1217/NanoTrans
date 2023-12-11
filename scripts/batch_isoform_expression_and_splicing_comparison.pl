@@ -132,14 +132,14 @@ if ($comparison_groups_count <= 1) {
 	    $local_time = localtime();
 	    print "\n[$local_time] Making comparison between groups: $comparison_groups[$i] and $comparison_groups[$j] ..\n";
 	    $between_group_comparison_count++;
-	    if ($min_replicate_count >= 3) {
+	    #if ($min_replicate_count >= 3) {
 			$local_time = localtime();
-			print "\n[$local_time] Minimal replicate count = $min_replicate_count (>= 3). Perform between group comparison with replicate-based batch effect removal ..\n";
+			print "\n[$local_time] Minimal replicate count = $min_replicate_count (>= 2). Perform between group comparison with replicate-based batch effect removal ..\n";
 			$local_time = localtime();
 			print "\n[$local_time] Detecting isoforms with differential expression ..\n";
 			system("$flair_dir/flair diffExp -t $threads -q $isoform_quantification_tsv_file -e ${read_counts_cutoff} -o ${batch_id}_differential_expression_output");
 			chdir("${batch_id}_differential_expression_output") or die "cannot change directory to: $!\n";
-			#system("mv workdir/dge_stderr.txt workdir/log.txt");
+
 			# generate tidy result tables
 			my $comparison_group_pair_tag;
 			$comparison_group_pair_tag = $comparison_groups[$i] ."_v_". $comparison_groups[$j];
@@ -162,8 +162,8 @@ if ($comparison_groups_count <= 1) {
 	
 			$local_time = localtime();
 			print "\n[$local_time] Detecting isoforms with differential isoform splicing ..\n";
-			system("mkdir ${batch_id}_differential_splicing_output");
-			system("$flair_dir/flair diffSplice -t $threads -i $isoform_clustering_bed_file -q $isoform_quantification_tsv_file --test --batch --conditionA $comparison_groups[$i] --conditionB $comparison_groups[$j] --drim1 6 --drim2 3 --drim3 15 --drim4 5 -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing");
+			system("[ -d ${batch_id}_differential_splicing_output ] || mkdir ${batch_id}_differential_splicing_output");
+			system("$flair_dir/flair diffSplice -t $threads -i $isoform_clustering_bed_file -q $isoform_quantification_tsv_file --test --batch --conditionA $comparison_groups[$i] --conditionB $comparison_groups[$j] --drim1 4 --drim2 2 --drim3 15 --drim4 5 -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing");
 			#system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.* ${batch_id}_differential_splicing_output");
 			chdir("${batch_id}_differential_splicing_output") or die "cannot change directory to: $!\n";
 
@@ -182,48 +182,48 @@ if ($comparison_groups_count <= 1) {
 			#system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.*.events.quant.tsv intermediate_files");
 			#system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing.*drimseq_results.tsv intermediate_files");
 			chdir("./../") or die "cannot change directory to: $!\n";
-	    } else {
-			$local_time = localtime();
-			print "\n[$local_time] Minimal replicate count = $min_replicate_count (< 3). Perform between group comparison without replicate-based batch effect removal ..\n";
-			$local_time = localtime();
-			print "\n[$local_time] Detecting isoforms with differential expression and splicing respectively ..\n";
-
-			system("if [ ! -d ${batch_id}_differential_expression_output ];         then mkdir    ${batch_id}_differential_expression_output; fi");
-			system("if [ ! -d ${batch_id}_differential_splicing_output ];           then mkdir    ${batch_id}_differential_splicing_output  ; fi");
-			system("if [ ! -d ${batch_id}_differential_expression_output/workdir ]; then mkdir -p ${batch_id}_differential_expression_output/workdir; fi");
-			system("if [ ! -d ${batch_id}_differential_splicing_output/workdir ];   then mkdir -p ${batch_id}_differential_splicing_output/workdir  ; fi");
-
-			system("$flair_dir/flair diffSplice -t $threads -i $isoform_clustering_bed_file -q $isoform_quantification_tsv_file -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing");
-			system("cp $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.es.events.quant.tsv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.es.events.quant.tsv.bk");
-			system("perl $NANOTRANS_HOME/scripts/fix_flair_diffSpice_id_parsing_issue.pl -i $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.es.events.quant.tsv.bk -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.es.events.quant.tsv");
-
-			foreach my $sample_in_group_i (@{$comparison_groups{$comparison_groups[$i]}}) {
-		    	foreach my $sample_in_group_j (@{$comparison_groups{$comparison_groups[$j]}}){
-					my $comparison_sample_pair = "${sample_in_group_i}-${sample_in_group_j}";
-					$local_time = localtime();
-					print "\n[$local_time] Making comparison between samples: ${sample_in_group_i} and ${sample_in_group_j} ..\n";
-					my $sample_in_group_i_tag = "${sample_in_group_i}_$sample_table{$sample_in_group_i}{'comparison_group'}_$sample_table{$sample_in_group_i}{'replicate_id'}";
-					my $sample_in_group_j_tag = "${sample_in_group_j}_$sample_table{$sample_in_group_j}{'comparison_group'}_$sample_table{$sample_in_group_j}{'replicate_id'}";
-					system("$flair_dir/diff_iso_usage $isoform_quantification_tsv_file $sample_in_group_i_tag $sample_in_group_j_tag $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.raw.txt");
-					system("perl $NANOTRANS_HOME/scripts/tidy_diff_iso_usage_output.pl -i $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.raw.txt -o $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt.tmp -a $sample_in_group_i_tag -b $sample_in_group_j_tag -x $base_dir/$transcript2gene_map");
-					system("Rscript --vanilla $NANOTRANS_HOME/scripts/apply_p_value_fdr_adjustment.R $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt.tmp $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt");
-					system("rm $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt.tmp");
-					system("mv $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.raw.txt  ${batch_id}_differential_expression_output/workdir");
-					system("mv $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt ${batch_id}_differential_expression_output");
-					my @diff_splicing_types = qw(ir es alt3 alt5);
-					foreach my $diff_splicing_type (@diff_splicing_types) {
-					    system("$flair_dir/diffsplice_fishers_exact $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.$diff_splicing_type.events.quant.tsv  $sample_in_group_i_tag $sample_in_group_j_tag $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.raw.txt");
-					    system("perl $NANOTRANS_HOME/scripts/tidy_diffsplice_fishers_exact_output.pl -i $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.raw.txt -o $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt.tmp -x $base_dir/$transcript2gene_map");
-					    system("Rscript --vanilla $NANOTRANS_HOME/scripts/apply_p_value_fdr_adjustment.R $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt.tmp $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt");
-					    system("rm $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt.tmp");
-					    system("mv $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.raw.txt  ${batch_id}_differential_splicing_output/workdir");
-					    system("mv $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt ${batch_id}_differential_splicing_output");
-					}
-		    	}
-			}
-			system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/*.tsv    ${batch_id}_differential_splicing_output/workdir");
-			system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/*.tsv.bk ${batch_id}_differential_splicing_output/workdir");
-	    }
+	    #} else {
+		#	$local_time = localtime();
+		#	print "\n[$local_time] Minimal replicate count = $min_replicate_count (< 3). Perform between group comparison without replicate-based batch effect removal ..\n";
+		#	$local_time = localtime();
+		#	print "\n[$local_time] Detecting isoforms with differential expression and splicing respectively ..\n";
+		#
+		#	system("if [ ! -d ${batch_id}_differential_expression_output ];         then mkdir    ${batch_id}_differential_expression_output; fi");
+		#	system("if [ ! -d ${batch_id}_differential_splicing_output ];           then mkdir    ${batch_id}_differential_splicing_output  ; fi");
+		#	system("if [ ! -d ${batch_id}_differential_expression_output/workdir ]; then mkdir -p ${batch_id}_differential_expression_output/workdir; fi");
+		#	system("if [ ! -d ${batch_id}_differential_splicing_output/workdir ];   then mkdir -p ${batch_id}_differential_splicing_output/workdir  ; fi");
+		#
+		#	system("$flair_dir/flair diffSplice -t $threads -i $isoform_clustering_bed_file -q $isoform_quantification_tsv_file -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing");
+		#	system("cp $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.es.events.quant.tsv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.es.events.quant.tsv.bk");
+		#	system("perl $NANOTRANS_HOME/scripts/fix_flair_diffSpice_id_parsing_issue.pl -i $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.es.events.quant.tsv.bk -o $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.es.events.quant.tsv");
+		#
+		#	foreach my $sample_in_group_i (@{$comparison_groups{$comparison_groups[$i]}}) {
+		#    	foreach my $sample_in_group_j (@{$comparison_groups{$comparison_groups[$j]}}){
+		#			my $comparison_sample_pair = "${sample_in_group_i}-${sample_in_group_j}";
+		#			$local_time = localtime();
+		#			print "\n[$local_time] Making comparison between samples: ${sample_in_group_i} and ${sample_in_group_j} ..\n";
+		#			my $sample_in_group_i_tag = "${sample_in_group_i}_$sample_table{$sample_in_group_i}{'comparison_group'}_$sample_table{$sample_in_group_i}{'replicate_id'}";
+		#			my $sample_in_group_j_tag = "${sample_in_group_j}_$sample_table{$sample_in_group_j}{'comparison_group'}_$sample_table{$sample_in_group_j}{'replicate_id'}";
+		#			system("$flair_dir/diff_iso_usage $isoform_quantification_tsv_file $sample_in_group_i_tag $sample_in_group_j_tag $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.raw.txt");
+		#			system("perl $NANOTRANS_HOME/scripts/tidy_diff_iso_usage_output.pl -i $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.raw.txt -o $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt.tmp -a $sample_in_group_i_tag -b $sample_in_group_j_tag -x $base_dir/$transcript2gene_map");
+		#			system("Rscript --vanilla $NANOTRANS_HOME/scripts/apply_p_value_fdr_adjustment.R $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt.tmp $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt");
+		#			system("rm $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt.tmp");
+		#			system("mv $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.raw.txt  ${batch_id}_differential_expression_output/workdir");
+		#			system("mv $batch_id.${comparison_sample_pair}_comparison.differential_isoform_usage.tidy.txt ${batch_id}_differential_expression_output");
+		#			my @diff_splicing_types = qw(ir es alt3 alt5);
+		#			foreach my $diff_splicing_type (@diff_splicing_types) {
+		#			    system("$flair_dir/diffsplice_fishers_exact $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/diffsplice.$diff_splicing_type.events.quant.tsv  $sample_in_group_i_tag $sample_in_group_j_tag $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.raw.txt");
+		#			    system("perl $NANOTRANS_HOME/scripts/tidy_diffsplice_fishers_exact_output.pl -i $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.raw.txt -o $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt.tmp -x $base_dir/$transcript2gene_map");
+		#			    system("Rscript --vanilla $NANOTRANS_HOME/scripts/apply_p_value_fdr_adjustment.R $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt.tmp $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt");
+		#			    system("rm $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt.tmp");
+		#			    system("mv $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.raw.txt  ${batch_id}_differential_splicing_output/workdir");
+		#			    system("mv $batch_id.${comparison_sample_pair}_comparison.differential_isoform_splicing.$diff_splicing_type.events.quant.tidy.txt ${batch_id}_differential_splicing_output");
+		#			}
+		#    	}
+		#	}
+		#	system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/*.tsv    ${batch_id}_differential_splicing_output/workdir");
+		#	system("mv $batch_id.${comparison_group_pair}_comparison.differential_isoform_splicing/*.tsv.bk ${batch_id}_differential_splicing_output/workdir");
+	    #}
 		}
     }
 }
