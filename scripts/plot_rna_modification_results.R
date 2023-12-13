@@ -117,7 +117,7 @@ ggplot(data_lower_top, aes(x=id, y=diff_mod_rate)) +
     panel.grid.minor = element_blank(),
     legend.key.size = unit(0.4, "cm")
   ) 
-ggsave(paste0(opt$prefix, "diff_RNA_mod.", opt$group_a, "-", opt$group_b, ".negative.top", opt$top_n, ".pdf"), height = 5, width = 4)
+ggsave(paste0(opt$prefix, "diff_RNA_mod.", opt$group_a, "-", opt$group_b, ".negative.top", opt$top_n, ".pdf"), height = 4, width = 4)
 
 
 ggplot(data_higher_top, aes(x=id, y=diff_mod_rate)) +
@@ -145,7 +145,7 @@ ggplot(data_higher_top, aes(x=id, y=diff_mod_rate)) +
     panel.grid.minor = element_blank(),
     legend.key.size = unit(0.4, "cm")
   ) 
-ggsave(paste0(opt$prefix, "diff_RNA_mod.", opt$group_a, "-", opt$group_b, ".positive.top", opt$top_n, ".pdf"), height = 5, width = 4)
+ggsave(paste0(opt$prefix, "diff_RNA_mod.", opt$group_a, "-", opt$group_b, ".positive.top", opt$top_n, ".pdf"), height = 4, width = 4)
 
 
 
