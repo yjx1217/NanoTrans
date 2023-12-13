@@ -58,11 +58,12 @@ install_r_pkg () {
     if [ -z $(check_installed "$rlib_dir/$1") ]; then
         echo "[$(timestamp)] Installing $1 (R package)..."
         clean "$rlib_dir/$1"
-        R -e "install.packages(\"$1\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+        R -e "install.packages(\"$1\", version = \"$2\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
         note_installed "$rlib_dir/$1"
     fi  
 }
 
+# aim: marking that pkg (python) has beed installed successfully through conda 
 install_pkg_byconda () {
     if [ ! -d $site_packages/$1 ]; then mkdir -p $site_packages/$1 ; fi
     if [ -z $(check_installed $site_packages/$1) ]; then
@@ -72,6 +73,18 @@ install_pkg_byconda () {
         source $miniconda3_dir/deactivate 
     fi
     note_installed $site_packages/$1
+}
+
+install_and_create_pkg_condaenv () {
+    if [ -z $(check_installed $build_dir/${1}_conda_env/bin) ]; then
+        echo "[$(timestamp)] Installing $1 ..."
+        cd $build_dir
+        $miniconda3_dir/conda create -y -p $build_dir/${1}_conda_env
+        source $miniconda3_dir/activate    $build_dir/${1}_conda_env
+        $miniconda3_dir/conda install -y -c conda-forge -c bioconda $1=$2
+        source $miniconda3_dir/deactivate
+        note_installed $build_dir/${1}_conda_env/bin
+    fi
 }
 
 
@@ -238,6 +251,9 @@ PANDAS_VERSION="1.2.4"
 PYSAM_VERSION="0.9.1"
 TABIX_VERSION="0.2.5"
 
+# pkgs used in generating HTML reports
+QUARTO_VERSION="1.3.450"
+
 # Create the $BUILD directory for dependency installation
 
 if [ -d $BUILD ]
@@ -340,9 +356,10 @@ fi
 #     note_installed "$rlib_dir/samplesizeCMH"
 # fi
 
-install_r_pkg data.table
-install_r_pkg ggseqlogo
-
+install_r_pkg data.table "1.14.8"
+install_r_pkg ggseqlogo  "0.1"
+install_r_pkg DT         "0.31"
+install_r_pkg tidyr       "1.3.0"
 
 # ------------- Miniconda3 --------------------
 echo ""
@@ -787,6 +804,11 @@ if [ -z $(check_installed $jaffal_dir) ]; then
     note_installed $jaffal_dir
 fi
 
+# --------------- Quarto -----------------
+
+install_and_create_pkg_condaenv quarto ${QUARTO_VERSION}
+
+
 echo ""
 echo "#########################################################"
 # Configure executable paths
@@ -827,6 +849,7 @@ echo "export velvet_dir=${velvet_dir}" >> env.sh
 echo "export bpipe_dir=${bpipe_dir}" >> env.sh
 echo "export ucsc_dir=${ucsc_dir}" >> env.sh
 echo "export jaffal_dir=${jaffal_dir}" >> env.sh
+echo "export quarto_dir=${build_dir}/quarto_conda_env/bin" >> env.sh
 
 
 # test java configuration: requireds java 1.8 
