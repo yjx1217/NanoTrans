@@ -10,13 +10,10 @@ PATH=$ucsc_dir:$PATH
 # set project-specific variables
 batch_id="Batch_Example" # The batch_id used for the processing batch. Default = "Batch_Example".
 master_sample_table="Master_Sample_Table.$batch_id.txt" # The master sample table for the processing batch. Default = "Master_Sample_Table.$batch_id.txt".
-#threads=4 # The number of threads to use. Default = 4.
-#top_n=20 # The number of genes with top differential RNA modification for plotting. Default = 20.
 cutoff_p=0.05 # The threshold of p-value to filter diffmod kmers. Default = 0.05.
 direction_to_filter_modrate="higher" # Direction to filter kmers according to differentially modified rate (twoside, higher, lower). Defaul = "twoside". 
 cutoff_modrate=0.5 # The threshold of the lowest modified rate change between the two condition. Default = 0.5.
 keep_kmers="keepA" # Whether to retain kmers whose center are A only (keepA, all). Default = "keepA".
-#debug="no" # Whether to keep intermediate files for debuging. Use "yes" if prefer to keep intermediate files, otherwise use "no". Default = "no".
 ############################################################
 # Normally no need to change the following settings.
 # Inputs
