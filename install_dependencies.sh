@@ -63,6 +63,15 @@ install_r_pkg () {
     fi  
 }
 
+#install_r_pke_byBiocManager () {
+#    if [ -z $(check_installed "$rlib_dir/$1") ]; then
+#        echo "[$(timestamp)] Installing $1 (R package)..."
+#        clean "$rlib_dir/$1"
+#        R -e ".libPaths(\"$build_dir/R_libs/\"); BiocManager::install(\"$1\", lib=\"$build_dir/R_libs/\")"
+#        note_installed "$rlib_dir/$1"
+#    fi  
+#}
+
 # aim: marking that pkg (python) has beed installed successfully through conda 
 install_pkg_byconda () {
     if [ ! -d $site_packages/$1 ]; then mkdir -p $site_packages/$1 ; fi
@@ -359,7 +368,9 @@ fi
 install_r_pkg data.table "1.14.8"
 install_r_pkg ggseqlogo  "0.1"
 install_r_pkg DT         "0.31"
-install_r_pkg tidyr       "1.3.0"
+install_r_pkg tidyr      "1.3.0"
+install_r_pkg tibble     "3.2.1"
+#install_r_pke_byBiocManager DESeq2 
 
 # ------------- Miniconda3 --------------------
 echo ""
@@ -819,7 +830,7 @@ echo "[$(timestamp)] Configuring executable paths ..."
 echo "export NANOTRANS_HOME=${NANOTRANS_HOME}" > env.sh
 echo "export build_dir=${build_dir}" >> env.sh
 echo "export PYTHONPATH=${PYTHONPATH}" >> env.sh
-echo "export R_LIBS=${rlib_dir}" >> env.sh
+echo "export R_LIBS=${rlib_dir}:${build_dir}/flair_conda_env/lib/R/library" >> env.sh
 echo "export PERL5LIB=${PERL5LIB}" >> env.sh 
 echo "export cpanm_dir=${cpanm_dir}" >> env.sh
 echo "export miniconda3_dir=${miniconda3_dir}" >> env.sh
