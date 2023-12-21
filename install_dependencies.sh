@@ -370,6 +370,7 @@ install_r_pkg ggseqlogo  "0.1"
 install_r_pkg DT         "0.31"
 install_r_pkg tidyr      "1.3.0"
 install_r_pkg tibble     "3.2.1"
+install_r_pkg generics   "0.1.3"
 #install_r_pke_byBiocManager DESeq2 
 
 # ------------- Miniconda3 --------------------

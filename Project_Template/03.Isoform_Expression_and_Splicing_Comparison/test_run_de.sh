@@ -30,7 +30,12 @@ Rscript --vanilla $NANOTRANS_HOME/scripts/differential_expression.R \
     --contrast ${contrast} \
     --batch_id ${batch_id} 
 
-
-
+source activate ../../build/flair_conda_env/
+Rscript --vanilla $NANOTRANS_HOME/scripts/differential_isoform_usage.R \
+    --tidy_count_table ${quant_table} \
+    #--adj_p_value_cutoff ${adj_p_value_cutoff} \
+    --contrast ${contrast} \
+    --batch_id ${batch_id} 
+source deactivate
 
     
