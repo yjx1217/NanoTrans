@@ -119,7 +119,7 @@ dt_ids <- tidy_count_table[, c("isoform_id", "gene_id", "gene_name")] %>% unique
 # build colData | rownames corresponding to colnames of count matrix
 col_data <- data.frame(condition = colnames(count_table)[-c(1:2)]) %>% 
   tidyr::separate(condition, c("condition", "batch"), sep = "\\.") %>% 
-  mutate(condition = factor(condition, levels = treatment_conditions))  # the last level as ref group
+  mutate(condition = factor(condition, levels = rev(treatment_conditions)))  # the first level as ref group
 if (sum(is.na(col_data$condition)) > 0) print("Please verify that names of treatment conditions are equal to master table's 'comparison_group'.")
 rownames(col_data) <- colnames(count_table)[-c(1:2)] 
 samples <- col_data %>% tibble::rownames_to_column("sample_id")
