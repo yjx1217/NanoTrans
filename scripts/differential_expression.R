@@ -70,7 +70,14 @@ option_list <- list(
     default = NULL,
     help = "dataset name",
     metavar = "character"
-  )   
+  ),
+  make_option(
+    c("--interested_genes"),
+    type = "character",
+    default = NULL,
+    help = "Genes that want to be highlighted",
+    metavar = "character"
+  )
 )
 
 opt <- parse_args(OptionParser(option_list = option_list))
@@ -226,7 +233,7 @@ plot_volcano <- function(
     tidy_res$label <- tidy_res$gene_name
   }
   
-  tidy_res$label[tidy_res$class == "no"] <- NA
+  #tidy_res$label[tidy_res$class == "no"] <- NA
   
   volcanoplot_palette <- c("blue", "red", "grey")
   names(volcanoplot_palette) <- c("down", "up", "no")
@@ -236,10 +243,20 @@ plot_volcano <- function(
            x = log2FoldChange,
            y = -log10(padj),
            color = class,
-           label = label
          )) +
     geom_point(alpha = 0.3) +
-    geom_text_repel(size = 2) +
+    geom_text_repel(
+      data = tidy_res %>% as.data.table() %>% arrange(pvalue) %>% .[1:20,],
+      aes(label = label), force = 2, size = 2
+    ) +
+    geom_point(
+      data = tidy_res %>% as.data.table() %>% .[gene_name %in% genes_to_label, ],
+      shape = 21, stroke = 1
+    ) +
+    geom_label_repel(
+      data = tidy_res %>% as.data.table() %>% .[gene_name %in% genes_to_label, ], 
+      aes(label = label), force = 2, size = 2
+    ) + 
     geom_vline(
       xintercept = c(-log2foldchange_cutoff, log2foldchange_cutoff),
       col = "snow3",
@@ -257,7 +274,7 @@ plot_volcano <- function(
       x = -Inf, y = -log10(adj_p_value_cutoff), label = paste0("adj. p-value = ", adj_p_value_cutoff),
       vjust = 1.1, hjust = -0.1, size = 2.5, color = "black"
     ) +
-    scale_x_continuous(limits = c(-5, 5), breaks = seq(-5, 5, 2)) +
+    #scale_x_continuous(limits = c(-5, 5), breaks = seq(-5, 5, 2)) +
     scale_color_manual(values = volcanoplot_palette) +
     labs(
       subtitle = comparison_group_pair_tag,
@@ -338,6 +355,9 @@ res_isoform <- run_deseq2(isoform_count_table, opt$read_counts_cutoff, treatment
 
 # ============================================================================ #
 # plot
+
+# interested genes to highlight
+genes_to_label <- unlist(strsplit(opt$interested_genes, split = ","))
 
 plot_volcano(res_gene,    "gene",    opt$log2foldchange_cutoff, opt$adj_p_value_cutoff, output_dir)
 plot_volcano(res_isoform, "isoform", opt$log2foldchange_cutoff, opt$adj_p_value_cutoff, output_dir)

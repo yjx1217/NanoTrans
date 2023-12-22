@@ -15,6 +15,7 @@ contrast="vir1,VIRc" # format: test_group_tag,control_group_tag. Must be the sam
 read_counts_cutoff=5 # The read count cutoff for the differentially expressed genes/isoforms table. Default = 5.
 log2foldchange_cutoff=1 # The log2 foldchange cutoff for the differential expression volcano plot. Default = 1.
 adj_p_value_cutoff=0.05 # The adjusted p-value cutoff for the differential expression volcano plot. Default = 0.05.
+interested_genes="FLC"  # Interested genes (comma separated gene names, eg., FLC,CCA1) want to be highlighted in volcano plots. Default = NULL.
 debug="no" # Whether to keep intermediate files for debuging. Use "yes" if prefer to keep intermediate files, otherwise use "no". Default = "no".
 ############################################################
 # Normally no need to change the following settings.
@@ -33,7 +34,6 @@ Rscript --vanilla $NANOTRANS_HOME/scripts/differential_expression.R \
 source activate ../../build/flair_conda_env/
 Rscript --vanilla $NANOTRANS_HOME/scripts/differential_isoform_usage.R \
     --tidy_count_table ${quant_table} \
-    #--adj_p_value_cutoff ${adj_p_value_cutoff} \
     --contrast ${contrast} \
     --batch_id ${batch_id} 
 source deactivate
