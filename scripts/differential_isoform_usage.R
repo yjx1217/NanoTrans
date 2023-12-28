@@ -4,7 +4,6 @@
 #  author: yld
 #  last edited: 2023.12.18
 #  description: differential isoform usage
-#  example: 
 ##############################################################
 
 # ============================================================================ #
@@ -53,7 +52,14 @@ option_list <- list(
     default = NULL,
     help = "dataset name",
     metavar = "character"
-  )   
+  ),
+  make_option(
+    c("--interested_genes"),
+    type = "character",
+    default = NULL,
+    help = "Genes that want to be highlighted, gene id",
+    metavar = "character"
+  )
 )
 
 opt <- parse_args(OptionParser(option_list = option_list))
@@ -66,7 +72,8 @@ if(FALSE) {
     tidy_count_table = "/public/yangludong/projects/test_nanotrans_updated_231122/proj_arabdopsis_tworeps/02.Isoform_Clustering_and_Quantification/Batch_Dataset2/all_samples_combined/Batch_Dataset2.all_samples_combined.counts_matrix.tidy.txt",
     contrast = "vir1,VIRc",
     read_counts_cutoff = 5,
-    batch_id = "Batch_Dataset2"
+    batch_id = "Batch_Dataset2",
+    interested_genes = "FLC"
   )
 }
   
@@ -154,10 +161,17 @@ fwrite(res, file = paste0(output_dir, "/", opt$batch_id, ".", treatment_conditio
 
 # drimseq data
 save(d, file = paste0(output_dir, "/", opt$batch_id, ".", treatment_conditions[1], "_vs_", treatment_conditions[2], "_comparison.differential_isoform_usage.drimseq.rdt"))
+load("/public/yangludong/projects/test_nanotrans_updated_231122/proj_arabdopsis_tworeps/03.Isoform_Expression_and_Splicing_Comparison/Batch_Dataset2/all_samples_combined/Batch_Dataset2_differential_expression_output/Batch_Dataset2.vir1_vs_VIRc_comparison.differential_isoform_usage.drimseq.rdt")
+# ============================================================================ #
+# option | plot DTU for interested genes
 
-#pdf("tmp1.pdf")
-#    plotProportions(d, gene_id = top_gene_id, group_variable = "condition", plot_type = "ribbonplot")
-#    plotPValues(d, level = "feature")
-#dev.off()
+if(!is.null(opt$interested_genes)) {
+  genes_to_label <- unlist(strsplit(opt$interested_genes, split = ","))
+  if(genes_to_label %in% names(d)) {
+    pdf(paste0(output_dir, "/", opt$batch_id, ".", treatment_conditions[1], "_vs_", treatment_conditions[2], "_comparison.differential_isoform_usage_interested_genes.pdf"))
+      plotProportions(d, gene_id = genes_to_label, group_variable = "condition", plot_type = "ribbonplot")
+    dev.off()
+  }
+}
 
   

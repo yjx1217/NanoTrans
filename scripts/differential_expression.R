@@ -274,7 +274,7 @@ plot_volcano <- function(
       x = -Inf, y = -log10(adj_p_value_cutoff), label = paste0("adj. p-value = ", adj_p_value_cutoff),
       vjust = 1.1, hjust = -0.1, size = 2.5, color = "black"
     ) +
-    #scale_x_continuous(limits = c(-5, 5), breaks = seq(-5, 5, 2)) +
+    scale_x_continuous(limits = c(-6, 6), breaks = seq(-5, 5, 2)) +
     scale_color_manual(values = volcanoplot_palette) +
     labs(
       subtitle = comparison_group_pair_tag,
@@ -292,7 +292,7 @@ plot_volcano <- function(
   ggsave(
     paste0(outdir, "/", opt$batch_id, ".", treatment_conditions[1], "_vs_", treatment_conditions[2], "_comparison.differential_", ids_type, "_volcanoplot.pdf"),
     p,
-    width = 5, height = 5
+    width = 4, height = 4
   )
 }
 
@@ -357,7 +357,11 @@ res_isoform <- run_deseq2(isoform_count_table, opt$read_counts_cutoff, treatment
 # plot
 
 # interested genes to highlight
-genes_to_label <- unlist(strsplit(opt$interested_genes, split = ","))
+if(length(opt$interested_genes) > 0) {
+  genes_to_label <- unlist(strsplit(opt$interested_genes, split = ","))
+} else {
+  genes_to_label <- ""
+}
 
 plot_volcano(res_gene,    "gene",    opt$log2foldchange_cutoff, opt$adj_p_value_cutoff, output_dir)
 plot_volcano(res_isoform, "isoform", opt$log2foldchange_cutoff, opt$adj_p_value_cutoff, output_dir)
