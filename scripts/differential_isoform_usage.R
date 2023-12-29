@@ -157,7 +157,7 @@ setnames(res, old = "feature_id", new = "isoform_id")
 # save
 
 # DTU table
-fwrite(res, file = paste0(output_dir, "/", opt$batch_id, ".", treatment_conditions[1], "_vs_", treatment_conditions[2], "_comparison.differential_isoform_usage.tidy.txt"))
+fwrite(res, file = paste0(output_dir, "/", opt$batch_id, ".", treatment_conditions[1], "_vs_", treatment_conditions[2], "_comparison.differential_isoform_usage.tidy.txt"), sep = "\t")
 
 # drimseq data
 save(d, file = paste0(output_dir, "/", opt$batch_id, ".", treatment_conditions[1], "_vs_", treatment_conditions[2], "_comparison.differential_isoform_usage.drimseq.rdt"))

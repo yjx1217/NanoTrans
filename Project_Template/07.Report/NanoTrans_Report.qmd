@@ -47,7 +47,8 @@ library(DT)
 # test read file
 test_read_file <- function(filepath) {
   tryCatch({
-    fread(filepath)
+    fread(filepath) %>% 
+      mutate(across(where(is.numeric), sprintf, fmt = '%.4f'))
   }, error = function(e) {
     print("file not exists")
   })
@@ -76,6 +77,7 @@ dt_outputs <- data.table(
   Module_03_deg_table     = c("03.Isoform_Expression_and_Splicing_Comparison", batch_id, "table",  ".*.differential_gene_expression.tidy.txt$"),
   Module_03_dei_table     = c("03.Isoform_Expression_and_Splicing_Comparison", batch_id, "table",  ".*.differential_isoform_expression.tidy.txt$"),
   Module_03_diu_table     = c("03.Isoform_Expression_and_Splicing_Comparison", batch_id, "table",  ".*.differential_isoform_usage.tidy.txt$"),
+  Module_03_dsi_table     = c("03.Isoform_Expression_and_Splicing_Comparison", batch_id, "table",  ".*.differential_isoform_splicing.all.events.quant.tidy.txt$"),
   Module_03_deg_volcano   = c("03.Isoform_Expression_and_Splicing_Comparison", batch_id, "figure", ".*.differential_gene_expression.tidy.for_plot.volcanoplot.pdf$"),
   Module_03_dei_volcano   = c("03.Isoform_Expression_and_Splicing_Comparison", batch_id, "figure", ".*.differential_isoform_expression.tidy.for_plot.volcanoplot.pdf$"),
   Module_04_mod_table     = c("04.Isoform_RNA_Modification_Identification",    batch_id, "figure", ".*.rna_modification.majority_direction_kmer_diffmod.table.tidy.filtered.txt$"),
@@ -149,17 +151,26 @@ if(!is.character(dt_quantify)) datatable(dt_quantify)
 ## Differentially Expressed Genes (DEGs)
 ```{r genes-comparison-table}
 dt_degs <- test_read_file(outputs_list$Module_03_deg_table)
-if(!is.character(dt_degs)) datatable(dt_degs) %>% formatRound(5:7, 2)
+if(!is.character(dt_degs)) datatable(dt_degs) 
+ #%>% formatRound(5:7, 2)
 ```
 ## Differentially Expressed Isoforms (DEIs)
 ```{r isoform-comparison-table}
 dt_deis <- test_read_file(outputs_list$Module_03_dei_table)
-if(!is.character(dt_deis)) datatable(dt_deis) %>% formatRound(5:7, 2)
+if(!is.character(dt_deis)) datatable(dt_deis) 
+#%>% formatRound(5:7, 2)
 ```
-## Differentially Spliced Isoforms Table
+## Differential Usage of Isoforms
+```{r isoform-comparison-usage-table}
+dt_dius <- test_read_file(outputs_list$Module_03_diu_table)
+if(!is.character(dt_dius)) datatable(dt_dius) 
+#%>% formatRound(5:8, 2)
+```
+## Differential Splicing Events
 ```{r isoform-comparison-splicing-table}
-dt_dsis <- test_read_file(outputs_list$Module_03_diu_table)
-if(!is.character(dt_dsis)) datatable(dt_dsis) %>% formatRound(5:8, 2)
+dt_dsis <- test_read_file(outputs_list$Module_03_dsi_table)
+if(!is.character(dt_dsis)) datatable(dt_dsis) 
+#%>% formatRound(5:8, 2)
 ```
 :::
 
@@ -192,6 +203,7 @@ test_print_plots(outputs_list$Module_05_polya_figs)
 ## Fusion Genes
 ```{r}
 if(length(outputs_list$Module_06_genefus_figs) > 0) {
+  print("Here is an example of a fusion gene. If you would like to know about all the detected fusion genes, please look in the module 06 folder.")
   knitr::include_graphics(outputs_list$Module_06_genefus_figs[[1]])
 } else {
   print("The file does not exist.")

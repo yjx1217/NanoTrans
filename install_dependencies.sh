@@ -371,6 +371,7 @@ install_r_pkg DT         "0.31"
 install_r_pkg tidyr      "1.3.0"
 install_r_pkg tibble     "3.2.1"
 install_r_pkg generics   "0.1.3"
+install_r_pkg quarto     "1.3"
 #install_r_pke_byBiocManager DESeq2 
 
 # ------------- Miniconda3 --------------------
@@ -818,7 +819,7 @@ fi
 
 # --------------- Quarto -----------------
 
-install_and_create_pkg_condaenv quarto ${QUARTO_VERSION}
+#install_and_create_pkg_condaenv quarto ${QUARTO_VERSION}
 
 
 echo ""
