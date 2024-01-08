@@ -1,5 +1,5 @@
 #!/bin/bash
-# last update: 2022/11/14
+# last update: 2024/01/08
 set -e -o pipefail
 
 #########################
@@ -58,11 +58,19 @@ install_r_pkg () {
     if [ -z $(check_installed "$rlib_dir/$1") ]; then
         echo "[$(timestamp)] Installing $1 (R package)..."
         clean "$rlib_dir/$1"
-        R -e "install.packages(\"$1\", version = \"$2\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+        R -e "install.packages(\"$1\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
         note_installed "$rlib_dir/$1"
     fi  
 }
-
+install_r_pkg_source () {
+    if [ -z $(check_installed "$rlib_dir/$1") ]; then
+        echo "[$(timestamp)] Installing $1 (R package)..."
+        clean "$rlib_dir/$1"
+        url_source_rpkg="https://cran.r-project.org/src/contrib/Archive/$1/${1}_${2}.tar.gz"
+        R -e "install.packages(\"$url_source_rpkg\", repos=NULL, type=\"source\", lib=\"$build_dir/R_libs/\")"
+        note_installed "$rlib_dir/$1"
+    fi  
+}
 #install_r_pke_byBiocManager () {
 #    if [ -z $(check_installed "$rlib_dir/$1") ]; then
 #        echo "[$(timestamp)] Installing $1 (R package)..."
@@ -173,7 +181,7 @@ if [ ! -z "$INSTALL_DEPS" ]; then
     xargs -a debiandeps sudo apt-get install -y
 fi
 
-MINICONDA3_VERSION="py37_4.9.2" # released on 2020.11.23
+MINICONDA3_VERSION="py39_23.11.0-2" # released on 2023.11.16
 if [[ "$mainland_china_installation" == "yes" ]]
 then
     MINICONDA3_DOWNLOAD_URL="https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"
@@ -226,7 +234,7 @@ GUPPY_CPU_DOWNLOAD_URL="https://mirror.oxfordnanoportal.com/software/analysis/on
 # QC
 NANOPLOT_VERSION="1.40.0" # released on 2022.04.08
 # NANOFILT_VERSION="2.8.0" # released on 2021.02.26
-NUMPY_VERSION="1.16.3"
+#NUMPY_VERSION="1.16.3"
 SCIPY_VERSION="1.2.1"
 
 NANOPOLISH_VERSION="0.14.0" # released on 2022.05.25
@@ -251,14 +259,6 @@ JAFFAL_DOWNLOAD_URL="https://github.com/Oshlack/JAFFA/releases/download/version-
 BEDPARTITION_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedPartition"
 GTFTOGENEPRED_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred"
 BLAT_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/blat/blat"
-
-# pkgs used in plotting characteristics of rna modifications
-CYUSHUFFLE_VERSION="1.1.2"
-MATPLOTLIB_VERSION="3.3.4"
-NUMPY_VERSION="1.17.0"
-PANDAS_VERSION="1.2.4"
-PYSAM_VERSION="0.9.1"
-TABIX_VERSION="0.2.5"
 
 # pkgs used in generating HTML reports
 QUARTO_VERSION="1.3.450"
@@ -301,10 +301,10 @@ if [ -z $(check_installed $cpanm_dir) ]; then
     ########
     chmod +x cpanm
     mkdir -p perlmods
-    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --notest --skip-installed Test::More@1.302086
-    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --notest --skip-installed Env@1.04
-    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --skip-installed Statistics::Descriptive@3.0612
-    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --skip-installed Statistics::Descriptive::Discrete@0.07
+    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --prompt --notest --skip-installed Test::More@1.302086
+    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --prompt --notest --skip-installed Env@1.04
+    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --prompt --skip-installed Statistics::Descriptive@3.0612
+    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --prompt --skip-installed Statistics::Descriptive::Discrete@0.07
     # $cpanm_dir/cpanm -l $cpanm_dir/perlmods --skip-installed Math::Random@0.72
     # $cpanm_dir/cpanm -l $cpanm_dir/perlmods --skip-installed Math::Round@0.07
     note_installed $cpanm_dir
@@ -312,6 +312,7 @@ fi
 
 echo ""
 echo "[$(timestamp)] Installing R libraries ..."
+which R || echo "Please install R first."
 r_path=$(which R)
 rlib_dir="$build_dir/R_libs"
 mkdir -p $rlib_dir
@@ -329,11 +330,11 @@ else
     die "R >= v3.6.0 is needed! Exit!"
 fi
 
-if [ -z $(check_installed "$rlib_dir/optparse") ]; then
-    clean "$rlib_dir/optparse"
-    R -e "install.packages(\"optparse\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
-    note_installed "$rlib_dir/optparse"
-fi
+#if [ -z $(check_installed "$rlib_dir/optparse") ]; then
+#    clean "$rlib_dir/optparse"
+#    R -e "install.packages(\"optparse\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+#    note_installed "$rlib_dir/optparse"
+#fi
 
 # if [ -z $(check_installed "$rlib_dir/RColorBrewer") ]; then
 #     clean "$rlib_dir/RColorBrewer"
@@ -341,23 +342,23 @@ fi
 #     note_installed "$rlib_dir/RColorBrewer"
 # fi
 
-if [ -z $(check_installed "$rlib_dir/ggplot2") ]; then
-    clean "$rlib_dir/ggplot2"
-    R -e "install.packages(\"ggplot2\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
-    note_installed "$rlib_dir/ggplot2"
-fi
-
-if [ -z $(check_installed "$rlib_dir/ggrepel") ]; then
-    clean "$rlib_dir/ggrepel"
-    R -e "install.packages(\"ggrepel\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
-    note_installed "$rlib_dir/ggrepel"
-fi
-
-if [ -z $(check_installed "$rlib_dir/dplyr") ]; then
-    clean "$rlib_dir/dplyr"
-    R -e "install.packages(\"dplyr\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
-    note_installed "$rlib_dir/dplyr"
-fi
+#if [ -z $(check_installed "$rlib_dir/ggplot2") ]; then
+#    clean "$rlib_dir/ggplot2"
+#    R -e "install.packages(\"ggplot2\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+#    note_installed "$rlib_dir/ggplot2"
+#fi
+#
+#if [ -z $(check_installed "$rlib_dir/ggrepel") ]; then
+#    clean "$rlib_dir/ggrepel"
+#    R -e "install.packages(\"ggrepel\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+#    note_installed "$rlib_dir/ggrepel"
+#fi
+#
+#if [ -z $(check_installed "$rlib_dir/dplyr") ]; then
+#    clean "$rlib_dir/dplyr"
+#    R -e "install.packages(\"dplyr\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+#    note_installed "$rlib_dir/dplyr"
+#fi
 
 # if [ -z $(check_installed "$rlib_dir/samplesizeCMH") ]; then
 #     clean "$rlib_dir/samplesizeCMH"
@@ -365,14 +366,15 @@ fi
 #     note_installed "$rlib_dir/samplesizeCMH"
 # fi
 
-install_r_pkg data.table "1.14.8"
-install_r_pkg ggseqlogo  "0.1"
-install_r_pkg DT         "0.31"
-install_r_pkg tidyr      "1.3.0"
-install_r_pkg tibble     "3.2.1"
-install_r_pkg generics   "0.1.3"
-install_r_pkg quarto     "1.3"
-#install_r_pke_byBiocManager DESeq2 
+install_r_pkg optparse
+install_r_pkg ggplot2
+install_r_pkg ggrepel
+install_r_pkg dplyr
+install_r_pkg data.table # "1.14.8"
+install_r_pkg_source ggseqlogo "0.1"
+install_r_pkg DT         # "0.31"
+install_r_pkg tidyr      # "1.3.0"
+install_r_pkg tibble     # "3.2.1"
 
 # ------------- Miniconda3 --------------------
 echo ""
@@ -484,7 +486,7 @@ if [ -z $(check_installed $trimmomatic_dir) ]; then
     note_installed $trimmomatic_dir
 fi
 
-# --------------- Guppy-GPU --------------------
+#--------------- Guppy-GPU --------------------
 echo ""
 echo "[$(timestamp)] Installing guppy-GPU ..."
 guppy_gpu_dir="$build_dir/ont-guppy-gpu/bin"
@@ -651,13 +653,20 @@ fi
 
 site_packages="$build_dir/site_packages"
 mkdir -p $site_packages
+# pkgs used in plotting characteristics of rna modifications
+CYUSHUFFLE_VERSION="1.1.2"
+PYSAM_VERSION="0.22.0"
+TABIX_VERSION="1.11"
+MATPLOTLIB_VERSION="3.8.2"
+NUMPY_VERSION="1.26.0"
+PANDAS_VERSION="2.1.4"
 
-install_pkg_byconda cyushuffle $CYUSHUFFLE_VERSION
-install_pkg_byconda matplotlib $MATPLOTLIB_VERSIO
-install_pkg_byconda numpy      $NUMPY_VERSION 
-install_pkg_byconda pandas     $PANDAS_VERSION
 install_pkg_byconda pysam      $PYSAM_VERSION
 install_pkg_byconda tabix      $TABIX_VERSION
+install_pkg_byconda matplotlib $MATPLOTLIB_VERSION
+install_pkg_byconda numpy      $NUMPY_VERSION 
+install_pkg_byconda pandas     $PANDAS_VERSION
+install_pkg_byconda cyushuffle $CYUSHUFFLE_VERSION
 
 # --------------- bpipe ------------------
 echo ""
@@ -819,7 +828,7 @@ fi
 
 # --------------- Quarto -----------------
 
-#install_and_create_pkg_condaenv quarto ${QUARTO_VERSION}
+install_and_create_pkg_condaenv quarto ${QUARTO_VERSION}
 
 
 echo ""

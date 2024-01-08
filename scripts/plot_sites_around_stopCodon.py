@@ -8,7 +8,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 plt.rcParams['pdf.fonttype'] = 42
-plt.rcParams['font.family'] = 'Arial'
+#plt.rcParams['font.family'] = 'Arial'
 # ============================================================================ #
 # parse args
 

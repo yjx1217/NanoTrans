@@ -161,11 +161,11 @@ fwrite(res, file = paste0(output_dir, "/", opt$batch_id, ".", treatment_conditio
 
 # drimseq data
 save(d, file = paste0(output_dir, "/", opt$batch_id, ".", treatment_conditions[1], "_vs_", treatment_conditions[2], "_comparison.differential_isoform_usage.drimseq.rdt"))
-load("/public/yangludong/projects/test_nanotrans_updated_231122/proj_arabdopsis_tworeps/03.Isoform_Expression_and_Splicing_Comparison/Batch_Dataset2/all_samples_combined/Batch_Dataset2_differential_expression_output/Batch_Dataset2.vir1_vs_VIRc_comparison.differential_isoform_usage.drimseq.rdt")
-# ============================================================================ #
-# option | plot DTU for interested genes
 
-if(!is.null(opt$interested_genes)) {
+# ============================================================================ #
+# option | plot DTU for interested genes, gene id 
+
+if(length(opt$interested_genes) > 0) {
   genes_to_label <- unlist(strsplit(opt$interested_genes, split = ","))
   if(genes_to_label %in% names(d)) {
     pdf(paste0(output_dir, "/", opt$batch_id, ".", treatment_conditions[1], "_vs_", treatment_conditions[2], "_comparison.differential_isoform_usage_interested_genes.pdf"))

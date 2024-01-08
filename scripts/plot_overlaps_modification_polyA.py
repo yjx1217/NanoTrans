@@ -19,7 +19,7 @@ import pysam
 from ushuffle import shuffle as ushuffle
 
 plt.rcParams['pdf.fonttype'] = 42
-plt.rcParams['font.family'] = 'Arial'
+#plt.rcParams['font.family'] = 'Arial'
 # ============================================================================ #
 # parse args
 

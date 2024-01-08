@@ -13,7 +13,7 @@ contrast="vir1,VIRc" # format: test_group_tag,control_group_tag. Must be the sam
 read_counts_cutoff=5 # The read count cutoff for the differentially expressed genes/isoforms table. Default = 5.
 log2foldchange_cutoff=1 # The log2 foldchange cutoff for the differential expression volcano plot. Default = 1.
 adj_p_value_cutoff=0.05 # The adjusted p-value cutoff for the differential expression volcano plot. Default = 0.05.
-interested_genes=""  # Interested genes (comma separated gene names, eg., FLC,CCA1) would like to be highlighted in volcano plots. Default = NULL.
+interested_genes="FLC"  # Interested genes (comma separated gene names, eg., FLC,CCA1) would like to be highlighted in volcano plots. Default = NULL.
 debug="no" # Whether to keep intermediate files for debuging. Use "yes" if prefer to keep intermediate files, otherwise use "no". Default = "no".
 ############################################################
 # Normally no need to change the following settings.
@@ -29,22 +29,22 @@ Rscript --vanilla $NANOTRANS_HOME/scripts/differential_expression.R \
     --log2foldchange_cutoff ${log2foldchange_cutoff} \
     --adj_p_value_cutoff ${adj_p_value_cutoff} \
     --contrast ${contrast} \
+    --interested_genes ${interested_genes} \
     --batch_id ${batch_id} 
 
-source activate ../../build/flair_conda_env/
+source $miniconda3_dir/activate ../../build/flair_conda_env/
 
 echo "Detecting isoforms with differential usage ..."
 Rscript --vanilla $NANOTRANS_HOME/scripts/differential_isoform_usage.R \
     --tidy_count_table ${quant_table} \
     --contrast ${contrast} \
-    --batch_id ${batch_id} \
-    --interested_genes ${interested_genes}
+    --batch_id ${batch_id} 
 
 echo "Detecting differential splicing events ..."
 
 [[ -d ${diffsplice_outdir} ]] || mkdir -p ${diffsplice_outdir}
 
-call_ds_program=${build_dir}/flair_conda_env/lib/python3.9/site-packages/flair
+call_ds_program=${build_dir}/flair_conda_env/lib/python*/site-packages/flair
 python ${call_ds_program}/call_diffsplice_events.py ${isoform_bed} ${diffsplice_outdir}/diffsplice ${raw_quant_table}
 python ${call_ds_program}/es_as.py ${isoform_bed} > ${diffsplice_outdir}/diffsplice.es.events.tsv
 python ${call_ds_program}/es_as_inc_excl_to_counts.py ${raw_quant_table} ${diffsplice_outdir}/diffsplice.es.events.tsv > ${diffsplice_outdir}/diffsplice.es.events.quant.tsv
@@ -54,7 +54,8 @@ Rscript --vanilla $NANOTRANS_HOME/scripts/differential_splicing.R \
     --contrast ${contrast} \
     --threads ${threads} \
     --batch_id ${batch_id} 
-source deactivate
+
+source $miniconda3_dir/deactivate
 
 if [[ ${debug} == "no" ]]; then
   rm ${diffsplice_outdir}/diffsplice.*.events.tsv

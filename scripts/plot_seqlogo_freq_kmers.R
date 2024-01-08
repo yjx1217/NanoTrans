@@ -61,7 +61,8 @@ m6a.motifs <- do.call(paste0, df.motifs[, 1:5])  # DRACH
 # ============================================================================ #
 # plot | seq logo 
 
-kmer_seqlogo <- ggseqlogo(difmods[["kmer"]], method = 'prob')
+kmer_seqlogo <- ggseqlogo(difmods[["kmer"]], method = 'prob') +
+  ggplot2::scale_x_continuous(breaks = 1:5, labels = c(-2:2))
 
 # ============================================================================ #
 # plot | barplot for frequency of diff modified kmers

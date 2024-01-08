@@ -145,6 +145,7 @@ run_deseq2 <- function(
   dds <- DESeq(dds)
   #dds$condition <- relevel(dds$condition, ref = treatment_conditions[2])
   res <- results(dds, contrast = c("condition", treatment_conditions))
+  print(nrow(as.data.frame(res)))
   #resLFC <- lfcShrink(dds, coef = paste0("condition_", treatment_conditions[1], "_vs_", treatment_conditions[2])) # type = apeglm
   
   # tidy res
@@ -161,8 +162,9 @@ run_deseq2 <- function(
     .[padj < 0.05, ]
 
   # quanlity control
-  vsd <- vst(dds, blind = FALSE)
-  pcaData <- DESeq2::plotPCA(vsd, intgroup = c("condition"), returnData = TRUE)
+  se <- SummarizedExperiment(log2(counts(dds, normalized=TRUE) + 1),
+                             colData=colData(dds))
+  pcaData <- DESeq2::plotPCA(DESeqTransform(se), intgroup = c("condition"), returnData = TRUE)
 
   # plots
   percentVar <- round(100 * attr(pcaData, "percentVar"))
@@ -216,7 +218,7 @@ plot_volcano <- function(
   outdir
 ) {
 
-  comparison_group_pair_tag <- unique(tidy_res$comparison_group_pair)
+  comparison_group_pair_tag <- sub("/" , " vs. ", unique(tidy_res$comparison_group_pair))
 
   tidy_res <- tidy_res %>% 
     mutate(class = ifelse(log2FoldChange > 0 , "up", "down")) %>% 

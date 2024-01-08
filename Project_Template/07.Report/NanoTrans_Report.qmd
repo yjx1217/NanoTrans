@@ -50,7 +50,7 @@ test_read_file <- function(filepath) {
     fread(filepath) %>% 
       mutate(across(where(is.numeric), sprintf, fmt = '%.4f'))
   }, error = function(e) {
-    print("file not exists")
+    print("The file does not exist.")
   })
 }
 
