@@ -57,10 +57,6 @@ Rscript --vanilla $NANOTRANS_HOME/scripts/differential_splicing.R \
 
 source $miniconda3_dir/deactivate
 
-if [[ ${debug} == "no" ]]; then
-  rm ${diffsplice_outdir}/diffsplice.*.events.tsv
-fi
-
 ############################
 # checking bash exit status
 if [[ $? -eq 0 ]]

@@ -370,11 +370,12 @@ install_r_pkg optparse
 install_r_pkg ggplot2
 install_r_pkg ggrepel
 install_r_pkg dplyr
-install_r_pkg data.table # "1.14.8"
+install_r_pkg data.table 
 install_r_pkg_source ggseqlogo "0.1"
-install_r_pkg DT         # "0.31"
-install_r_pkg tidyr      # "1.3.0"
-install_r_pkg tibble     # "3.2.1"
+install_r_pkg DT         
+install_r_pkg tidyr      
+install_r_pkg tibble     
+install_r_pkg generics
 
 # ------------- Miniconda3 --------------------
 echo ""
