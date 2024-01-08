@@ -17,3 +17,18 @@ source $miniconda3_dir/activate  $build_dir/quarto_conda_env
 R_LIBS=$NANOTRANS_HOME/build/R_libs
 quarto render NanoTrans_Report.qmd -P "wkdir:${wkdir%/*}" -P "dataset:${batch_id}"
 source $miniconda3_dir/deactivate
+
+############################
+# checking bash exit status
+if [[ $? -eq 0 ]]
+then
+    echo ""
+    echo "#########################################################################"
+    echo ""
+    echo "NanoTrans message: This bash script has been successfully processed! :)"
+    echo ""
+    echo "#########################################################################"
+    echo ""
+    exit 0
+fi
+############################
