@@ -11,11 +11,12 @@ master_sample_table="Master_Sample_Table.$batch_id.txt" # The master sample tabl
 ############################################################
 # Normally no need to change the following settings.
 wkdir=${PWD}
+outname=NanoTrans_Report_${batch_id}.html
 ##########################################################
 
 source $miniconda3_dir/activate  $build_dir/quarto_conda_env
 R_LIBS=$NANOTRANS_HOME/build/R_libs
-quarto render NanoTrans_Report.qmd -P "wkdir:${wkdir%/*}" -P "dataset:${batch_id}"
+quarto render NanoTrans_Report.qmd -P "wkdir:${wkdir%/*}" -P "dataset:${batch_id}" --output ${outname}
 source $miniconda3_dir/deactivate
 
 ############################
