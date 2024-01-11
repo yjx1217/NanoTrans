@@ -24,3 +24,5 @@ NanoTrans is designed for a desktop or computing server running an x86-64-bit Li
 * wget (https://www.gnu.org/software/wget/)
 * zlib and zlib-devel (https://zlib.net/)
 * xz and xz-devel (https://tukaani.org/xz/)
+* perl-devel (https://pkgs.org/download/perl-devel)
+* R 3.6 or newer (https://www.r-project.org/)

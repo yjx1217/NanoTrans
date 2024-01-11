@@ -86,9 +86,9 @@ if ($comparison_groups_count <= 1) {
 	    $local_time = localtime();
 	    print "\n[$local_time] Making comparison between groups $comparison_groups[$i] and $comparison_groups[$j] ..\n";
 	    $between_group_comparison_count++;
-	    if ($min_replicate_count >= 3) {
+	    if ($min_replicate_count >= 2) {
 		$local_time = localtime();
-		print "\n[$local_time] Minimal replicate count = $min_replicate_count (>= 3). Perform between group comparison with replicate-based batch effect removal ..\n";
+		print "\n[$local_time] Minimal replicate count = $min_replicate_count (>= 2). Perform between group comparison with replicate-based batch effect removal ..\n";
 		$local_time = localtime();
                 chdir("${batch_id}_differential_expression_output") or die "cannot change directory to: $!\n";
 		print "\n[$local_time] Plotting differential isoform and gene expression results ..\n";

@@ -35,6 +35,8 @@ Under the hood, a series of task-specific modules are provided to carry out the 
   * profiling poly(A) tail length of each isoform
 * **06.Gene_Fusion_Detection**
   * identifying gene fusion based on the chimeric isoform evidence
+* **07.Report**
+  * summarizing the major results into one HTML
 
 
 ## Citation
@@ -46,6 +48,7 @@ NanoTrans itself is distributed under the MIT license but some of its dependenci
 
 ## Release history
 * v0.0.1 Released on 2022/11/30
+* v0.0.2 Released on 2024/01/10
 
 ## Installation
 ```sh
@@ -83,3 +86,5 @@ NanoTrans is designed for a desktop or computing server running an x86-64-bit Li
 * wget (https://www.gnu.org/software/wget/)
 * zlib and zlib-devel (https://zlib.net/)
 * xz and xz-devel (https://tukaani.org/xz/)
+* perl-devel (https://pkgs.org/download/perl-devel)
+* R 3.6 or newer (https://www.r-project.org/)

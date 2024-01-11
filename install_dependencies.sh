@@ -1,5 +1,5 @@
 #!/bin/bash
-# last update: 2022/11/14
+# last update: 2024/01/08
 set -e -o pipefail
 
 #########################
@@ -53,6 +53,57 @@ check_installed () {
 note_installed () {
     touch "$1/installed"
 }
+
+install_r_pkg () {
+    if [ -z $(check_installed "$rlib_dir/$1") ]; then
+        echo "[$(timestamp)] Installing $1 (R package)..."
+        clean "$rlib_dir/$1"
+        R -e "install.packages(\"$1\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+        note_installed "$rlib_dir/$1"
+    fi  
+}
+install_r_pkg_source () {
+    if [ -z $(check_installed "$rlib_dir/$1") ]; then
+        echo "[$(timestamp)] Installing $1 (R package)..."
+        clean "$rlib_dir/$1"
+        url_source_rpkg="https://cran.r-project.org/src/contrib/Archive/$1/${1}_${2}.tar.gz"
+        R -e "install.packages(\"$url_source_rpkg\", repos=NULL, type=\"source\", lib=\"$build_dir/R_libs/\")"
+        note_installed "$rlib_dir/$1"
+    fi  
+}
+#install_r_pke_byBiocManager () {
+#    if [ -z $(check_installed "$rlib_dir/$1") ]; then
+#        echo "[$(timestamp)] Installing $1 (R package)..."
+#        clean "$rlib_dir/$1"
+#        R -e ".libPaths(\"$build_dir/R_libs/\"); BiocManager::install(\"$1\", lib=\"$build_dir/R_libs/\")"
+#        note_installed "$rlib_dir/$1"
+#    fi  
+#}
+
+# aim: marking that pkg (python) has beed installed successfully through conda 
+install_pkg_byconda () {
+    if [ ! -d $site_packages/$1 ]; then mkdir -p $site_packages/$1 ; fi
+    if [ -z $(check_installed $site_packages/$1) ]; then
+        echo "[$(timestamp)] Installing $1 ..."
+        source $miniconda3_dir/activate $build_dir/miniconda3
+        $miniconda3_dir/conda install -y -c conda-forge -c bioconda $1=$2
+        source $miniconda3_dir/deactivate 
+    fi
+    note_installed $site_packages/$1
+}
+
+install_and_create_pkg_condaenv () {
+    if [ -z $(check_installed $build_dir/${1}_conda_env/bin) ]; then
+        echo "[$(timestamp)] Installing $1 ..."
+        cd $build_dir
+        $miniconda3_dir/conda create -y -p $build_dir/${1}_conda_env
+        source $miniconda3_dir/activate    $build_dir/${1}_conda_env
+        $miniconda3_dir/conda install -y -c conda-forge -c bioconda $1=$2
+        source $miniconda3_dir/deactivate
+        note_installed $build_dir/${1}_conda_env/bin
+    fi
+}
+
 
 echo ""
 echo ""
@@ -130,7 +181,7 @@ if [ ! -z "$INSTALL_DEPS" ]; then
     xargs -a debiandeps sudo apt-get install -y
 fi
 
-MINICONDA3_VERSION="py37_4.9.2" # released on 2020.11.23
+MINICONDA3_VERSION="py39_23.11.0-2" # released on 2023.11.16
 if [[ "$mainland_china_installation" == "yes" ]]
 then
     MINICONDA3_DOWNLOAD_URL="https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"
@@ -183,13 +234,13 @@ GUPPY_CPU_DOWNLOAD_URL="https://mirror.oxfordnanoportal.com/software/analysis/on
 # QC
 NANOPLOT_VERSION="1.40.0" # released on 2022.04.08
 # NANOFILT_VERSION="2.8.0" # released on 2021.02.26
-NUMPY_VERSION="1.16.3"
+#NUMPY_VERSION="1.16.3"
 SCIPY_VERSION="1.2.1"
 
 NANOPOLISH_VERSION="0.14.0" # released on 2022.05.25
 NANOPOLISH_GITHUB_VERSION="07cb03d"
 
-FLAIR_VERSION="1.6.3" # 
+FLAIR_VERSION="2.0.0" # 
 
 GFFREAD_VERSION="0.12.7" # released on 2021.07.23
 GFFREAD_DOWNLOAD_URL="http://ccb.jhu.edu/software/stringtie/dl/gffread-${GFFREAD_VERSION}.Linux_x86_64.tar.gz"
@@ -208,6 +259,9 @@ JAFFAL_DOWNLOAD_URL="https://github.com/Oshlack/JAFFA/releases/download/version-
 BEDPARTITION_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedPartition"
 GTFTOGENEPRED_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred"
 BLAT_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/blat/blat"
+
+# pkgs used in generating HTML reports
+QUARTO_VERSION="1.3.450"
 
 # Create the $BUILD directory for dependency installation
 
@@ -247,10 +301,10 @@ if [ -z $(check_installed $cpanm_dir) ]; then
     ########
     chmod +x cpanm
     mkdir -p perlmods
-    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --notest --skip-installed Test::More@1.302086
-    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --notest --skip-installed Env@1.04
-    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --skip-installed Statistics::Descriptive@3.0612
-    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --skip-installed Statistics::Descriptive::Discrete@0.07
+    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --prompt --notest --skip-installed Test::More@1.302086
+    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --prompt --notest --skip-installed Env@1.04
+    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --prompt --skip-installed Statistics::Descriptive@3.0612
+    $cpanm_dir/cpanm -l $cpanm_dir/perlmods --prompt --skip-installed Statistics::Descriptive::Discrete@0.07
     # $cpanm_dir/cpanm -l $cpanm_dir/perlmods --skip-installed Math::Random@0.72
     # $cpanm_dir/cpanm -l $cpanm_dir/perlmods --skip-installed Math::Round@0.07
     note_installed $cpanm_dir
@@ -258,6 +312,7 @@ fi
 
 echo ""
 echo "[$(timestamp)] Installing R libraries ..."
+which R || echo "Please install R first."
 r_path=$(which R)
 rlib_dir="$build_dir/R_libs"
 mkdir -p $rlib_dir
@@ -275,11 +330,11 @@ else
     die "R >= v3.6.0 is needed! Exit!"
 fi
 
-if [ -z $(check_installed "$rlib_dir/optparse") ]; then
-    clean "$rlib_dir/optparse"
-    R -e "install.packages(\"optparse\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
-    note_installed "$rlib_dir/optparse"
-fi
+#if [ -z $(check_installed "$rlib_dir/optparse") ]; then
+#    clean "$rlib_dir/optparse"
+#    R -e "install.packages(\"optparse\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+#    note_installed "$rlib_dir/optparse"
+#fi
 
 # if [ -z $(check_installed "$rlib_dir/RColorBrewer") ]; then
 #     clean "$rlib_dir/RColorBrewer"
@@ -287,23 +342,23 @@ fi
 #     note_installed "$rlib_dir/RColorBrewer"
 # fi
 
-if [ -z $(check_installed "$rlib_dir/ggplot2") ]; then
-    clean "$rlib_dir/ggplot2"
-    R -e "install.packages(\"ggplot2\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
-    note_installed "$rlib_dir/ggplot2"
-fi
-
-if [ -z $(check_installed "$rlib_dir/ggrepel") ]; then
-    clean "$rlib_dir/ggrepel"
-    R -e "install.packages(\"ggrepel\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
-    note_installed "$rlib_dir/ggrepel"
-fi
-
-if [ -z $(check_installed "$rlib_dir/dplyr") ]; then
-    clean "$rlib_dir/dplyr"
-    R -e "install.packages(\"dplyr\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
-    note_installed "$rlib_dir/dplyr"
-fi
+#if [ -z $(check_installed "$rlib_dir/ggplot2") ]; then
+#    clean "$rlib_dir/ggplot2"
+#    R -e "install.packages(\"ggplot2\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+#    note_installed "$rlib_dir/ggplot2"
+#fi
+#
+#if [ -z $(check_installed "$rlib_dir/ggrepel") ]; then
+#    clean "$rlib_dir/ggrepel"
+#    R -e "install.packages(\"ggrepel\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+#    note_installed "$rlib_dir/ggrepel"
+#fi
+#
+#if [ -z $(check_installed "$rlib_dir/dplyr") ]; then
+#    clean "$rlib_dir/dplyr"
+#    R -e "install.packages(\"dplyr\", repos=\"http://cran.rstudio.com/\", lib=\"$build_dir/R_libs/\")"
+#    note_installed "$rlib_dir/dplyr"
+#fi
 
 # if [ -z $(check_installed "$rlib_dir/samplesizeCMH") ]; then
 #     clean "$rlib_dir/samplesizeCMH"
@@ -311,7 +366,16 @@ fi
 #     note_installed "$rlib_dir/samplesizeCMH"
 # fi
 
-
+install_r_pkg optparse
+install_r_pkg ggplot2
+install_r_pkg ggrepel
+install_r_pkg dplyr
+install_r_pkg data.table 
+install_r_pkg_source ggseqlogo "0.1"
+install_r_pkg DT         
+install_r_pkg tidyr      
+install_r_pkg tibble     
+install_r_pkg generics
 
 # ------------- Miniconda3 --------------------
 echo ""
@@ -423,7 +487,7 @@ if [ -z $(check_installed $trimmomatic_dir) ]; then
     note_installed $trimmomatic_dir
 fi
 
-# --------------- Guppy-GPU --------------------
+#--------------- Guppy-GPU --------------------
 echo ""
 echo "[$(timestamp)] Installing guppy-GPU ..."
 guppy_gpu_dir="$build_dir/ont-guppy-gpu/bin"
@@ -580,8 +644,30 @@ if [ -z $(check_installed $flair_dir) ]; then
     rm bam2Bed12.content
     # turn on pdf output for plot_isoform_usage
     cp $NANOTRANS_HOME/misc/plot_isoform_usage_for_pdf plot_isoform_usage
+    # fix a bug in subset_unassigned_reads.py
+    cd $build_dir/flair_conda_env/lib/python3.9/site-packages/flair
+    sed -i -e "25s/$/[:line[3].rfind(';')]/" -e "27s/$/[:line[9].rfind(';')]/" subset_unassigned_reads.py
     note_installed $flair_dir
 fi
+
+# --------------- rna modification deps -----------------
+
+site_packages="$build_dir/site_packages"
+mkdir -p $site_packages
+# pkgs used in plotting characteristics of rna modifications
+CYUSHUFFLE_VERSION="1.1.2"
+PYSAM_VERSION="0.22.0"
+TABIX_VERSION="1.11"
+MATPLOTLIB_VERSION="3.8.2"
+NUMPY_VERSION="1.26.0"
+PANDAS_VERSION="2.1.4"
+
+install_pkg_byconda pysam      $PYSAM_VERSION
+install_pkg_byconda tabix      $TABIX_VERSION
+install_pkg_byconda matplotlib $MATPLOTLIB_VERSION
+install_pkg_byconda numpy      $NUMPY_VERSION 
+install_pkg_byconda pandas     $PANDAS_VERSION
+install_pkg_byconda cyushuffle $CYUSHUFFLE_VERSION
 
 # --------------- bpipe ------------------
 echo ""
@@ -741,6 +827,11 @@ if [ -z $(check_installed $jaffal_dir) ]; then
     note_installed $jaffal_dir
 fi
 
+# --------------- Quarto -----------------
+
+install_and_create_pkg_condaenv quarto ${QUARTO_VERSION}
+
+
 echo ""
 echo "#########################################################"
 # Configure executable paths
@@ -751,7 +842,7 @@ echo "[$(timestamp)] Configuring executable paths ..."
 echo "export NANOTRANS_HOME=${NANOTRANS_HOME}" > env.sh
 echo "export build_dir=${build_dir}" >> env.sh
 echo "export PYTHONPATH=${PYTHONPATH}" >> env.sh
-echo "export R_LIBS=${rlib_dir}" >> env.sh
+echo "export R_LIBS=${rlib_dir}:${build_dir}/flair_conda_env/lib/R/library" >> env.sh
 echo "export PERL5LIB=${PERL5LIB}" >> env.sh 
 echo "export cpanm_dir=${cpanm_dir}" >> env.sh
 echo "export miniconda3_dir=${miniconda3_dir}" >> env.sh
@@ -781,6 +872,7 @@ echo "export velvet_dir=${velvet_dir}" >> env.sh
 echo "export bpipe_dir=${bpipe_dir}" >> env.sh
 echo "export ucsc_dir=${ucsc_dir}" >> env.sh
 echo "export jaffal_dir=${jaffal_dir}" >> env.sh
+echo "export quarto_dir=${build_dir}/quarto_conda_env/bin" >> env.sh
 
 
 # test java configuration: requireds java 1.8 
