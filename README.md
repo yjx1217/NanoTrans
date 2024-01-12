@@ -14,7 +14,7 @@ Nanopore direct-RNA sequencing (DRS) provides the direct access to native RNA st
 </div>
 
 <p align="center">
-  <img src="https://github.com/yjx1217/NanoTrans/blob/main/NanoTrans.overview.png" alt="NanoTrans_overview" width="800" height="851"/>
+  <img src="https://github.com/yjx1217/NanoTrans/blob/main/NanoTrans.overview.png" alt="NanoTrans_overview" width="800" height="1131"/>
 </p>
 
 Under the hood, a series of task-specific modules are provided to carry out the full workflow of NanoTrans:
@@ -40,7 +40,7 @@ Under the hood, a series of task-specific modules are provided to carry out the 
 
 
 ## Citation
-Fan Wang, Xinxin Zhang, Li Zhang, Jing Li, Jia-Xing Yue. (2022) NanoTrans: an integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing. BioRxiv. (doi: https://doi.org/10.1101/2022.11.29.518309)
+Ludong Yang, Xinxin Zhang, Fan Wang, Li Zhang, Jing Li, Jia-Xing Yue. (2024) NanoTrans: An integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing. BioRxiv, (doi: https://doi.org/10.1101/2022.11.29.518309)
 
 
 ## License
