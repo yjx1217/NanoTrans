@@ -145,6 +145,7 @@ foreach my $sample_id (@sample_table) {
     $local_time = localtime();
     print "[$local_time] processing sample $sample_id with xpore dataprep ..\n";
     system("$xpore_dir/xpore dataprep --n_processes $threads --eventalign $sample_id.isoform_based_mapping.eventalign.txt --gtf_or_gff $isoform_clustering_gtf_file --transcript_fasta $isoform_clustering_fasta_file --out_dir dataprep");
+    system("gzip $sample_id.isoform_based_mapping.eventalign.txt");
     chdir("./../") or die "cannot change directory to: $!\n";
 }
 
