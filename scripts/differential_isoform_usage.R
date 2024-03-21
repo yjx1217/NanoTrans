@@ -26,6 +26,13 @@ option_list <- list(
     metavar = "character"
   ),
   make_option(
+    c("--master_table"),
+    type = "character",
+    default = NULL,
+    help = "name of the sample table file",
+    metavar = "character"
+  ),
+  make_option(
     c("--threads"),
     type = "integer",
     default = 1,
@@ -94,7 +101,12 @@ if(!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
 print("The plots & DTU table will be generated at the path: ")
 print(output_dir)
-
+# read the master table
+master_table <- tryCatch({
+  fread(opt$master_table)
+}, error = function(err) {
+  print("The master table does not exist.")
+})
 # read quant table & set groups
 tidy_count_table <- tryCatch({
   fread(opt$tidy_count_table)
@@ -124,9 +136,10 @@ dt_ids <- tidy_count_table[, c("isoform_id", "gene_id", "gene_name")] %>% unique
 # calculate differential isoforms usage by DRIMseq
 
 # build colData | rownames corresponding to colnames of count matrix
-col_data <- data.frame(condition = colnames(count_table)[-c(1:2)]) %>% 
-  tidyr::separate(condition, c("condition", "batch"), sep = "\\.") %>% 
-  mutate(condition = factor(condition, levels = rev(treatment_conditions)))  # the first level as ref group
+col_data <- data.frame(sample_ids = colnames(count_table)[-c(1:2)]) %>% 
+  left_join(master_table[, c("#sample_id", "comparison_group", "replicate_id")], by = c("sample_ids" = "#sample_id")) %>% 
+  mutate(condition = comparison_group) %>% 
+  mutate(condition = factor(condition, levels = rev(treatment_conditions))) 
 if (sum(is.na(col_data$condition)) > 0) print("Please verify that names of treatment conditions are equal to master table's 'comparison_group'.")
 rownames(col_data) <- colnames(count_table)[-c(1:2)] 
 samples <- col_data %>% tibble::rownames_to_column("sample_id")

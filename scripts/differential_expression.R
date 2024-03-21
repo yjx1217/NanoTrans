@@ -29,13 +29,13 @@ option_list <- list(
     help = "tidy count table based on flair quantify results",
     metavar = "character"
   ),
-  #make_option(
-  #  c("--master_table"),
-  #  type = "character",
-  #  default = NULL,
-  #  help = "name of the sample table file",
-  #  metavar = "character"
-  #),
+  make_option(
+    c("--master_table"),
+    type = "character",
+    default = NULL,
+    help = "name of the sample table file",
+    metavar = "character"
+  ),
   make_option(
     c("--read_counts_cutoff"),
     type = "integer",
@@ -87,15 +87,26 @@ opt <- parse_args(OptionParser(option_list = option_list))
 
 if (FALSE) {
   opt <- list(
-    tidy_count_table = "/public/yangludong/projects/test_nanotrans_updated_231122/proj_arabdopsis_tworeps/02.Isoform_Clustering_and_Quantification/Batch_Dataset2/all_samples_combined/Batch_Dataset2.all_samples_combined.counts_matrix.tidy.txt",
-    contrast = "vir1,VIRc",
+    tidy_count_table = "/public/yangludong/projects/test_nanotrans_updated_240108/proj_gsa_PRJCA017047_downs_10reads/02.Isoform_Clustering_and_Quantification/downs10reads_PRJCA017047/all_samples_combined/downs10reads_PRJCA017047.all_samples_combined.counts_matrix.tidy.txt",
+    contrast = "mu,wt",
     read_counts_cutoff = 5,
-    batch_id = "Batch_Dataset2"
+    batch_id = "Batch_debug",
+    master_table = ""
   )
 }
 
 # ============================================================================ #
 # functions
+
+# TEST args for run_deseq2
+if (FALSE) {
+  count_table = gene_count_table
+  read_counts_cutoff = 5
+  groups = treatment_conditions
+  ids_type = "gene"
+  outdir = output_dir
+}
+
 
 run_deseq2 <- function(
   count_table, # tidy count table based on flair quantity results, retain 1 id col only
@@ -103,17 +114,12 @@ run_deseq2 <- function(
   groups, # treatment_conditions
   ids_type,  # gene or isoform to specific id type of input table
   outdir
-  # TEST
-  #count_table = gene_count_table
-  #read_counts_cutoff = 5
-  #groups = treatment_conditions
-  #ids_type = "gene"
-  #outdir = output_dir
 ) {
 
   # build colData | rownames corresponding to colnames of count matrix
-  col_data <- data.frame(condition = colnames(count_table)[-1]) %>% 
-    tidyr::separate(condition, c("condition", "batch"), sep = "\\.") %>% 
+  col_data <- data.frame(sample_ids = colnames(count_table)[-1]) %>% 
+    left_join(master_table[, c("#sample_id", "comparison_group", "replicate_id")], by = c("sample_ids" = "#sample_id")) %>% 
+    mutate(condition = comparison_group) %>% 
     mutate(condition = factor(condition, levels = rev(groups)))  # set the 1th level as the ref group
   if (sum(is.na(col_data$condition)) > 0) print("Please verify that names of treatment conditions are equal to master table's 'comparison_group'.")
   rownames(col_data) <- colnames(count_table)[-1]
@@ -314,6 +320,13 @@ if(!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
 print("The plots & DEG table will be generated at the path: ")
 print(output_dir)
+
+# read the master table
+master_table <- tryCatch({
+  fread(opt$master_table)
+}, error = function(err) {
+  print("The master table does not exist.")
+})
 
 # read quant table & set groups
 tidy_count_table <- tryCatch({
