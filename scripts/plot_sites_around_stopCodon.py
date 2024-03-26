@@ -7,6 +7,8 @@ import pysam
 from collections import Counter
 import matplotlib.pyplot as plt
 
+import os
+
 plt.rcParams['pdf.fonttype'] = 42
 #plt.rcParams['font.family'] = 'Arial'
 # ============================================================================ #
@@ -20,6 +22,12 @@ parser.add_argument('-o', '--outname',   help='output directory, required', defa
 args = parser.parse_args()
 
 genes_bed = args.refbed
+searchbed_idx = args.searchbed + ".tbi"
+
+if os.path.exists(searchbed_idx):
+    print("index file exists")
+else:
+    searchbed_idx = args.searchbed + ".csi"
 
 # ============================================================================ #
 # functions
@@ -44,9 +52,9 @@ def get_cds_region(bed, chrom, stop_pos, gene_strand, use_score=False, use_stran
                 region[idx] += float(record[4]) if use_score else 1
     return region
 
-def get_stop_profiles(tabix_file, use_score=False, use_strand=True):
+def get_stop_profiles(tabix_file, searchbed_idx_filepath, use_score=False, use_strand=True):
     stop_profiles = []
-    mismatches = pysam.TabixFile(tabix_file)
+    mismatches = pysam.TabixFile(filename = tabix_file, index = searchbed_idx_filepath)
     n_records = 0
     with open(genes_bed) as bed:
         for record in bed:
@@ -64,7 +72,7 @@ def get_stop_profiles(tabix_file, use_score=False, use_strand=True):
     mismatches.close()
     return stop_profiles, n_records
 
-der_site_stop_profiles, n_records_der = get_stop_profiles(args.searchbed)
+der_site_stop_profiles, n_records_der = get_stop_profiles(args.searchbed, searchbed_idx)
 # ============================================================================ #
 # plot
 fig, ax = plt.subplots(figsize=(5, 3))
