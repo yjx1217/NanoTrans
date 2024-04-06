@@ -8,6 +8,7 @@ PATH=$ucsc_dir:$PATH
 #######################################
 # set project-specific variables
 batch_id="Batch_Example" # The batch_id used for the processing batch. Default = "Batch_Example".
+master_sample_table="Master_Sample_Table.$batch_id.txt" # The master sample table for the processing batch. Default = "Master_Sample_Table.$batch_id.txt".
 threads=4 # The number of threads to use. Default = 4.
 contrast="vir1,VIRc" # format: test_group_tag,control_group_tag. Must be the same as the name in the comparison_group column of the master_sample_table.
 read_counts_cutoff=5 # The read count cutoff for the differentially expressed genes/isoforms table. Default = 5.
@@ -25,6 +26,7 @@ diffsplice_outdir="./${batch_id}/all_samples_combined/${batch_id}_differential_s
 echo "Detecting genes/isoforms with differential expression ..."
 Rscript --vanilla $NANOTRANS_HOME/scripts/differential_expression.R \
     --tidy_count_table ${quant_table} \
+    --master_table ${master_sample_table} \
     --read_counts_cutoff ${read_counts_cutoff} \
     --log2foldchange_cutoff ${log2foldchange_cutoff} \
     --adj_p_value_cutoff ${adj_p_value_cutoff} \
@@ -37,6 +39,7 @@ source $miniconda3_dir/activate ../../build/flair_conda_env/
 echo "Detecting isoforms with differential usage ..."
 Rscript --vanilla $NANOTRANS_HOME/scripts/differential_isoform_usage.R \
     --tidy_count_table ${quant_table} \
+    --master_table ${master_sample_table} \
     --contrast ${contrast} \
     --batch_id ${batch_id} 
 
