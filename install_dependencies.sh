@@ -1,5 +1,5 @@
 #!/bin/bash
-# last update: 2024/01/08
+# last update: 2024/04/09
 set -e -o pipefail
 
 #########################
@@ -26,7 +26,13 @@ download () {
   url=$1
   download_location=$2
   echo "Downloading $url to $download_location"
+  if [[ -f $1 ]];then
+    # if the tool has been downloaded and deposited in the local, then copy that to destination and install it
+    echo -n "The tool exists in the local: $1"
+    cp $1 $2
+  else
   wget -c --no-check-certificate --max-redirect=30 $url -O $download_location
+  fi
 }
 
 clone () {
@@ -182,7 +188,7 @@ if [ ! -z "$INSTALL_DEPS" ]; then
 fi
 
 MINICONDA3_VERSION="py39_23.11.0-2" # released on 2023.11.16
-if [[ "$mainland_china_installation" == "yes" ]]
+if [[ "$mainland_china_installation" == "no" ]]
 then
     MINICONDA3_DOWNLOAD_URL="https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"
 else
@@ -230,6 +236,9 @@ GUPPY_GPU_DOWNLOAD_URL="https://mirror.oxfordnanoportal.com/software/analysis/on
 #else
 GUPPY_CPU_DOWNLOAD_URL="https://mirror.oxfordnanoportal.com/software/analysis/ont-guppy-cpu_${GUPPY_VERSION}_linux64.tar.gz"
 #fi
+
+DORADO_VERSION="0.6.0" # released on 2024.04.02
+DORADO_DOWNLOAD_URL="https://cdn.oxfordnanoportal.com/software/analysis/dorado-${DORADO_VERSION}-linux-x64.tar.gz"
 
 # QC
 NANOPLOT_VERSION="1.40.0" # released on 2022.04.08
@@ -516,6 +525,20 @@ if [ -z $(check_installed $guppy_cpu_dir) ]; then
     note_installed $guppy_cpu_dir
 fi
 
+# -------------------- Dorado --------------------
+echo ""
+echo "[$(timestamp)] Installing Dorado ..."
+dorado_dir="$build_dir/dorado-${DORADO_VERSION}-linux-x64/bin"
+if [ -z $(check_installed $dorado_dir) ]; then
+    cd $build_dir
+    clean "$build_dir/dorado-${DORADO_VERSION}-linux-x64/"
+    echo "Download Dorado-v${GUPPY_VERSION}"
+    download $DORADO_DOWNLOAD_URL "dorado-${DORADO_VERSION}-linux-x64.tar.gz"
+    tar xvzf dorado-${DORADO_VERSION}-linux-x64.tar.gz
+    rm dorado-${DORADO_VERSION}-linux-x64.tar.gz
+    note_installed $dorado_dir
+fi
+
 # # ------------- seqtk -------------------
 # echo ""
 # echo "[$(timestamp)] Installing seqtk ..."
@@ -738,7 +761,7 @@ echo "[$(timestamp)] Installing fastx_toolkit ..."
 fastxtk_dir="$build_dir/fastx_toolkit/bin"
 if [ -z $(check_installed $fastxtk_dir) ]; then
     cd $build_dir
-    clean "$build_dir/fastx_toolkit_${FASTXTK_VERSION}"
+    clean "$build_dir/fastx_toolkit"
     mkdir fastx_toolkit
     cd fastx_toolkit
     echo "Download fastx_toolkit-v${FASTXTK_VERSION}"
@@ -778,6 +801,7 @@ echo ""
 echo "[$(timestamp)] Installing UCSC utilities ..."
 if [ -z $(check_installed $ucsc_dir) ]; then
     cd $build_dir
+    clean "$build_dir/UCSC_Utilities"
     mkdir UCSC_Utilities
     cd $ucsc_dir
     download $BEDPARTITION_DOWNLOAD_URL "bedPartition"
@@ -850,6 +874,7 @@ echo "export miniconda3_dir=${miniconda3_dir}" >> env.sh
 echo "export trimmomatic_dir=${trimmomatic_dir}" >> env.sh
 echo "export guppy_gpu_dir=${guppy_gpu_dir}" >> env.sh
 echo "export guppy_cpu_dir=${guppy_cpu_dir}" >> env.sh
+echo "export dorado_dir=${dorado_dir}" >> env.sh
 echo "export nanopolish_dir=${nanopolish_dir}" >> env.sh
 echo "export blast_dir=${blast_dir}" >> env.sh
 # echo "export seqtk_dir=${seqtk_dir}" >> env.sh
