@@ -44,8 +44,7 @@ if False:
 
 # motifpos = 1200
 # isoformId = "AT1G78930.1_AT1G78930"
-def trans_relpos_to_abspos(refbed, isoformId, motifpos):
-    sel_bed = refbed[refbed[3] == isoformId]
+def trans_relpos_to_abspos(sel_bed, motifpos):
     exons_size =  list(map(int, (sel_bed.iloc[0,10].split(",")[:-1])))
     exons_start = list(map(int, (sel_bed.iloc[0,11].split(",")[:-1])))
     chrom = sel_bed.iloc[0, 0]
@@ -78,9 +77,12 @@ with open(motifbed) as bed:
     for record in bed:
         record = record.split("\t")
         isoform_id = record[0] + "_" + record[1]
+        sel_bed = refbed[refbed[3] == isoform_id]
+        if sel_bed.empty:
+            continue
         motifpos = int(record[3])
         raw_info = isoform_id + "_" + record[3] + "_" + record[4]
-        chrom, abspos, strand = trans_relpos_to_abspos(refbed, isoform_id, motifpos)
+        chrom, abspos, strand = trans_relpos_to_abspos(sel_bed, motifpos)
         chroms.append(chrom)
         absposs.append(abspos)
         strands.append(strand)
