@@ -209,7 +209,7 @@ run_deseq2 <- function(
     } 
 
   } else {
-    stop("The outdir does exists. Please check it.")
+    stop("The outdir does not exists. Please check it.")
   }
 
   # return
@@ -252,19 +252,11 @@ plot_volcano <- function(
            y = -log10(padj),
            color = class,
          )) +
-    geom_point(alpha = 0.3) +
-    geom_text_repel(
-      data = tidy_res %>% as.data.table() %>% arrange(pvalue) %>% .[1:20,],
-      aes(label = label), force = 2, size = 2
-    ) +
+    geom_point(alpha = 0.3, size = 0.8) +
     geom_point(
       data = tidy_res %>% as.data.table() %>% .[gene_name %in% genes_to_label, ],
-      shape = 21, stroke = 1
+      shape = 21, stroke = 0.5, size = 0.8
     ) +
-    geom_label_repel(
-      data = tidy_res %>% as.data.table() %>% .[gene_name %in% genes_to_label, ], 
-      aes(label = label), force = 2, size = 2
-    ) + 
     geom_vline(
       xintercept = c(-log2foldchange_cutoff, log2foldchange_cutoff),
       col = "snow3",
@@ -277,10 +269,21 @@ plot_volcano <- function(
       linetype = "dashed",
       linewidth = 0.3
     ) +
+    geom_text_repel(
+      data = tidy_res %>% as.data.table() %>% arrange(pvalue) %>% .[1:20,],
+      aes(label = label), 
+      min.segment.length = 0.5, segment.size = 0.2,
+      max.overlaps = 15, bg.color = "white",
+      size = 1.2, max.time = 6
+    ) +
+    geom_label_repel(  # highlight the interested genes
+      data = tidy_res %>% as.data.table() %>% .[gene_name %in% genes_to_label, ], 
+      aes(label = label), size = 1.2, label.padding = 0.1, box.padding = 0.05
+    ) + 
     annotate(
       geom = "text",
       x = -Inf, y = -log10(adj_p_value_cutoff), label = paste0("adj. p-value = ", adj_p_value_cutoff),
-      vjust = 1.1, hjust = -0.1, size = 2.5, color = "black"
+      vjust = 1.1, hjust = -0.1, size = 2, color = "black"
     ) +
     scale_x_continuous(limits = c(-6, 6), breaks = seq(-5, 5, 2)) +
     scale_color_manual(values = volcanoplot_palette) +
@@ -291,7 +294,8 @@ plot_volcano <- function(
     ) +
     theme_bw() +
     theme(
-      text = element_text(size = 9),
+      text = element_text(size = 7),
+      axis.text = element_text(size = 7),
       panel.grid = element_blank(),
       axis.ticks = element_line(linewidth = 0.3),
       aspect.ratio = 1,
@@ -300,7 +304,7 @@ plot_volcano <- function(
   ggsave(
     paste0(outdir, "/", opt$batch_id, ".", treatment_conditions[1], "_vs_", treatment_conditions[2], "_comparison.differential_", ids_type, "_volcanoplot.pdf"),
     p,
-    width = 4, height = 4
+    width = 2.5, height = 2.5
   )
 }
 
