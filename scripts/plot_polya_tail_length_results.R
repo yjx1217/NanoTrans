@@ -60,10 +60,20 @@ p_value <- median_length_wilcox_stat$p.value
 ggplot(data, aes(x=comparison_group, y=median_length, fill=comparison_group)) +
   geom_violin(alpha=0.3) +
   geom_boxplot(outlier.shape=NA, width=0.2) +
+  xlab("") +
   ylab("median poly(A) tail length (bp)") +
   ggtitle(paste0("compared groups: ", opt$group_b, " vs. ", opt$group_a, "\ncompared quantity: median length\nstat test: ", test_name,"\nP=", p_value)) +
-  theme_bw() 
-ggsave(paste0(opt$prefix, ".median_length.violin_plot.pdf"))
+  theme_bw() +
+  theme(
+    plot.title.position = "panel",
+    plot.title = element_text(size = 7),
+    text = element_text(size = 7),
+    axis.text = element_text(size = 7),
+    panel.grid.major = element_blank(),
+    legend.title = element_blank(),
+    aspect.ratio = 1
+  )
+ggsave(paste0(opt$prefix, ".median_length.violin_plot.pdf"), width = 4, height = 3)
 
 # density plot
 ggplot(data, aes(x=median_length, color=comparison_group)) +
@@ -71,8 +81,17 @@ ggplot(data, aes(x=median_length, color=comparison_group)) +
   xlab("median poly(A) tail length (bp)") +
   ylab("density") +
   ggtitle(paste0("compared groups: ", opt$group_b, " vs. ", opt$group_a, "\ncompared quantity: median length")) +
-  theme_bw() 
-ggsave(paste0(opt$prefix, ".median_length.density_plot.pdf"))
+  theme_bw() +
+    theme(
+    plot.title.position = "panel",
+    plot.title = element_text(size = 7),
+    text = element_text(size = 7),
+    axis.text = element_text(size = 7),
+    panel.grid.major = element_blank(),
+    legend.title = element_blank(),
+    aspect.ratio = 1
+  )
+ggsave(paste0(opt$prefix, ".median_length.density_plot.pdf"), width = 4, height = 3)
 
 
 # based on mean
@@ -82,10 +101,20 @@ p_value <- mean_length_wilcox_stat$p.value
 ggplot(data, aes(x=comparison_group, y=mean_length, fill=comparison_group)) +
     geom_violin(alpha=0.3) +
     geom_boxplot(outlier.shape=NA, width=0.2) +
+    xlab("") +
     ylab("mean poly(A) tail length (bp)") +
     ggtitle(paste0("compared groups: ", opt$group_b, " vs. ", opt$group_a, "\ncompared quantity: mean length\nstat test: ", test_name,"\nP=", p_value)) +
-    theme_bw() 
-ggsave(paste0(opt$prefix, ".mean_length.violin_plot.pdf"))
+    theme_bw() +
+    theme(
+    plot.title.position = "panel",
+    plot.title = element_text(size = 7),
+    text = element_text(size = 7),
+    axis.text = element_text(size = 7),
+    panel.grid.major = element_blank(),
+    legend.title = element_blank(),
+    aspect.ratio = 1
+  )
+ggsave(paste0(opt$prefix, ".mean_length.violin_plot.pdf"), width = 4, height = 3)
   
 # density plot
 ggplot(data, aes(x=mean_length, color=comparison_group)) +
@@ -93,6 +122,15 @@ ggplot(data, aes(x=mean_length, color=comparison_group)) +
   xlab("mean poly(A) tail length (bp)") +
   ylab("density") +	  
   ggtitle(paste0("compared groups: ", opt$group_b, " vs. ", opt$group_a, "\ncompared quantity: mean length")) +
-  theme_bw() 
-ggsave(paste0(opt$prefix, ".mean_length.density_plot.pdf"))
+  theme_bw() +
+  theme(
+    plot.title.position = "panel",
+    plot.title = element_text(size = 7),
+    text = element_text(size = 7),
+    axis.text = element_text(size = 7),
+    panel.grid.major = element_blank(),
+    legend.title = element_blank(),
+    aspect.ratio = 1
+  )
+ggsave(paste0(opt$prefix, ".mean_length.density_plot.pdf"), width = 4, height = 3)
   
