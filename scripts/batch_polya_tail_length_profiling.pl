@@ -8,7 +8,7 @@ use Cwd;
 ##############################################################
 #  script: batch_polya_tail_length_profiling.pl
 #  author: Jia-Xing Yue (GitHub ID: yjx1217)
-#  last edited: 2022.09.27
+#  last edited: 2024.04.17
 #  description: profiling polyA tail length for gene and transcripts
 #  example: perl batch_polya_tail_length_profiling.pl -i Master_Sample_Table.txt -threads 4 -b $batch_id -isoform_cq_dir ./../02.Isoform_Clustering_and_Quantification -long_reads_dir ./../00.Long_Reads -method nanopolish -x ./../00.Reference_Genome/ref.transcript2gene_map.txt
 ##############################################################
@@ -72,18 +72,18 @@ foreach my $sample_id (@sample_table) {
     }
     if (-e $basecalled_fast5_dir) {
         print "Successfully located the specified long read file: $basecalled_fast5_dir.\n";
+        if (-e $basecalled_sequencing_summary) {
+            print "Successfully located the specified long read file: $basecalled_sequencing_summary.\n";
+        } else {
+            print "Cannot find the specified long read file: $basecalled_sequencing_summary!\n";
+            print "Exit!\n";
+            exit;
+        }
     } else {
         print "Cannot find the specified long read file: $basecalled_fast5_dir!\n";
-        print "Exit!\n";
-        exit;
+        print "Likely Dorado was chosen for basecalling, or double-check it is correct for $basecalled_fast5_dir!\n";
     }
-    if (-e $basecalled_sequencing_summary) {
-        print "Successfully located the specified long read file: $basecalled_sequencing_summary.\n";
-    } else {
-        print "Cannot find the specified long read file: $basecalled_sequencing_summary!\n";
-        print "Exit!\n";
-        exit;
-    }
+
 
     if (-e $isoform_clustering_fasta_file) {
 	print "Successfully located the isoform clustering fasta file: $isoform_clustering_fasta_file\n";
@@ -131,7 +131,12 @@ foreach my $sample_id (@sample_table) {
     # polyA profiling  
     if ($method eq "nanopolish") {
 	if ((not -e "$basecalled_fastq_file.index") or (not -e "$basecalled_fastq_file.index.gzi") or (not -e "$basecalled_fastq_file.index.fai") or (not -e "$basecalled_fastq_file.index.readdb")) {
-	    system("$nanopolish_dir/nanopolish index -s $basecalled_sequencing_summary -d $basecalled_fast5_dir $basecalled_fastq_file"); 
+	    if (( not -e $basecalled_sequencing_summary)) {
+            system("$nanopolish_dir/nanopolish index -d $basecalled_fast5_dir $basecalled_fastq_file"); 
+        } else {
+            system("$nanopolish_dir/nanopolish index -s $basecalled_sequencing_summary -d $basecalled_fast5_dir $basecalled_fastq_file"); 
+        }
+
 	}
 	system("$nanopolish_dir/nanopolish polya --threads $threads --reads $basecalled_fastq_file --bam $sample_id.sort.bam --genome $isoform_clustering_fasta_file  > $sample_id.nanopolish.polya_profiling.raw.txt");
 	system("head -1  $sample_id.nanopolish.polya_profiling.raw.txt > $sample_id.nanopolish.polya_profiling.header");
