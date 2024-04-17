@@ -31,7 +31,7 @@ download () {
     echo -n "The tool exists in the local: $1"
     cp $1 $2
   else
-  wget -c --no-check-certificate --max-redirect=30 $url -O $download_location
+    wget -c --no-check-certificate --max-redirect=30 $url -O $download_location
   fi
 }
 
