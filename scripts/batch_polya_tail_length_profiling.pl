@@ -76,12 +76,13 @@ foreach my $sample_id (@sample_table) {
             print "Successfully located the specified long read file: $basecalled_sequencing_summary.\n";
         } else {
             print "Cannot find the specified long read file: $basecalled_sequencing_summary!\n";
-            print "Exit!\n";
-            exit;
+            print "INFO: Likely Dorado was chosen for basecalling, please adjust the basecalled_fast5_dir column in Master_Sample_table to raw_fast5_dir; \n";
+            print "INFO: or double-check it is correct for $basecalled_fast5_dir!\n";
         }
     } else {
         print "Cannot find the specified long read file: $basecalled_fast5_dir!\n";
-        print "Likely Dorado was chosen for basecalling, or double-check it is correct for $basecalled_fast5_dir!\n";
+        print "Exit!\n";
+        exit;
     }
 
 
