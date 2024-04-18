@@ -14,7 +14,7 @@ Nanopore direct-RNA sequencing (DRS) provides the direct access to native RNA st
 </div>
 
 <p align="center">
-  <img src="https://github.com/yjx1217/NanoTrans/blob/main/NanoTrans.overview.png" alt="NanoTrans_overview" width="800" height="1131"/>
+  <img src="https://github.com/yjx1217/NanoTrans/blob/main/NanoTrans.overview.png" alt="NanoTrans_overview" width="800" height="1030"/>
 </p>
 
 Under the hood, a series of task-specific modules are provided to carry out the full workflow of NanoTrans:
@@ -49,6 +49,14 @@ NanoTrans itself is distributed under the MIT license but some of its dependenci
 ## Release history
 * v0.0.1 Released on 2022/11/30
 * v0.0.2 Released on 2024/01/10
+* v0.0.3 Released on 2024/04/17
+  * Module 00: `new` Add a new bash script into Module 00 to support basecalling with Dorado; Module 05: `improvement` Cancel to specify basecalling sequencing summary for nanopolish index when using Dorado as basecalling tool.
+  * Module 02, 04, 05: `improvement` Support csi format index for BAM to adapt large chromosomes.
+  * Module 03: `improvement` Restore the “master_sample_table” argument to make comparisons easier; optimize plots.
+  * Module 04: `improvement` Compress large files to reduce disk usage; `fix` Skip query isoforms that do not exist in the reference.
+  * Module 07: `fix` Specify the R PATH used in installation step to fix the conflict of different versions of R.
+  * Installation: `fix` Add Java to the ENV PATH to fix the java version bug when identifying fused genes; `improvement` Install tools from local by replacing the URL with a local path.
+
 
 ## Installation
 ```sh
