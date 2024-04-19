@@ -106,9 +106,13 @@ def get_pas_enrichment(der_sites_fn, fasta_fn, w, n_perm):
             if start < 0:
                 start = 0
             #strand = record[6]
-            seq = fasta.fetch(chrom, start, end)
+            try:
+                seq = fasta.fetch(chrom, start, end)
+            except Exception as e:
+                print(e)
+                continue
             #if record[3] == 'start':
-            seq = "{:N>101}".format(seq)  #TODO
+            seq = "{:N>101}".format(seq)  
             #if strand == '-':
             #    seq = rev_comp(seq)
             seqs.append(seq)

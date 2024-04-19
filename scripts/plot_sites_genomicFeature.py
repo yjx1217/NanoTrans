@@ -7,6 +7,9 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 import argparse
+
+import os
+
 plt.rcParams['pdf.fonttype'] = 42
 #plt.rcParams['font.family'] = 'Arial'
 # ============================================================================ #
@@ -18,6 +21,13 @@ parser.add_argument('-s', '--searchbed', help='motifs to search in bed format, r
 parser.add_argument('-o', '--outname',   help='output directory, required', default="./",  required=True)
 
 args = parser.parse_args()
+
+searchbed_idx = args.searchbed + ".tbi"
+if os.path.exists(searchbed_idx):
+    print("index file exists")
+else:
+    searchbed_idx = args.searchbed + ".csi"
+
 # ============================================================================ #
 # test
 
@@ -108,7 +118,7 @@ def count_mismatches_in_features(der_fn, use_strand=True):
     feature_counts = Counter()
     feat_lengths = get_lengths_for_norm()
     n_records = 0
-    with open(genes_bed) as bed, pysam.TabixFile(der_fn) as tabix:
+    with open(genes_bed) as bed, pysam.TabixFile(der_fn, index = searchbed_idx) as tabix:
         for record in bed:
             record = parse_features(record.split())
             if record['chrom'] not in unique_chrs:

@@ -1,5 +1,5 @@
 #!/bin/bash
-# last update: 2024/01/08
+# last update: 2024/04/09
 set -e -o pipefail
 
 #########################
@@ -26,7 +26,13 @@ download () {
   url=$1
   download_location=$2
   echo "Downloading $url to $download_location"
-  wget -c --no-check-certificate --max-redirect=30 $url -O $download_location
+  if [[ -f $1 ]];then
+    # if the tool has been downloaded and deposited in the local, then copy that to destination and install it
+    echo -n "The tool exists in the local: $1"
+    cp $1 $2
+  else
+    wget -c --no-check-certificate --max-redirect=30 $url -O $download_location
+  fi
 }
 
 clone () {
@@ -182,7 +188,7 @@ if [ ! -z "$INSTALL_DEPS" ]; then
 fi
 
 MINICONDA3_VERSION="py39_23.11.0-2" # released on 2023.11.16
-if [[ "$mainland_china_installation" == "yes" ]]
+if [[ "$mainland_china_installation" == "no" ]]
 then
     MINICONDA3_DOWNLOAD_URL="https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"
 else
@@ -230,6 +236,9 @@ GUPPY_GPU_DOWNLOAD_URL="https://mirror.oxfordnanoportal.com/software/analysis/on
 #else
 GUPPY_CPU_DOWNLOAD_URL="https://mirror.oxfordnanoportal.com/software/analysis/ont-guppy-cpu_${GUPPY_VERSION}_linux64.tar.gz"
 #fi
+
+DORADO_VERSION="0.6.0" # released on 2024.04.02
+DORADO_DOWNLOAD_URL="https://cdn.oxfordnanoportal.com/software/analysis/dorado-${DORADO_VERSION}-linux-x64.tar.gz"
 
 # QC
 NANOPLOT_VERSION="1.40.0" # released on 2022.04.08
@@ -389,7 +398,7 @@ if [ -z $(check_installed $miniconda3_dir) ]; then
     if [[ "$mainland_china_installation" == "yes" ]]
     then
 
-	$miniconda3_dir/conda config --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/main
+        $miniconda3_dir/conda config --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/main
         $miniconda3_dir/conda config --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/free
         $miniconda3_dir/conda config --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/pro
         $miniconda3_dir/conda config --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/msys2
@@ -514,6 +523,20 @@ if [ -z $(check_installed $guppy_cpu_dir) ]; then
     tar xvzf ont-guppy_${GUPPY_VERSION}_linux64.tar.gz
     rm ont-guppy_${GUPPY_VERSION}_linux64.tar.gz
     note_installed $guppy_cpu_dir
+fi
+
+# -------------------- Dorado --------------------
+echo ""
+echo "[$(timestamp)] Installing Dorado ..."
+dorado_dir="$build_dir/dorado-${DORADO_VERSION}-linux-x64/bin"
+if [ -z $(check_installed $dorado_dir) ]; then
+    cd $build_dir
+    clean "$build_dir/dorado-${DORADO_VERSION}-linux-x64/"
+    echo "Download Dorado-v${GUPPY_VERSION}"
+    download $DORADO_DOWNLOAD_URL "dorado-${DORADO_VERSION}-linux-x64.tar.gz"
+    tar xvzf dorado-${DORADO_VERSION}-linux-x64.tar.gz
+    rm dorado-${DORADO_VERSION}-linux-x64.tar.gz
+    note_installed $dorado_dir
 fi
 
 # # ------------- seqtk -------------------
@@ -738,7 +761,7 @@ echo "[$(timestamp)] Installing fastx_toolkit ..."
 fastxtk_dir="$build_dir/fastx_toolkit/bin"
 if [ -z $(check_installed $fastxtk_dir) ]; then
     cd $build_dir
-    clean "$build_dir/fastx_toolkit_${FASTXTK_VERSION}"
+    clean "$build_dir/fastx_toolkit"
     mkdir fastx_toolkit
     cd fastx_toolkit
     echo "Download fastx_toolkit-v${FASTXTK_VERSION}"
@@ -778,6 +801,7 @@ echo ""
 echo "[$(timestamp)] Installing UCSC utilities ..."
 if [ -z $(check_installed $ucsc_dir) ]; then
     cd $build_dir
+    clean "$build_dir/UCSC_Utilities"
     mkdir UCSC_Utilities
     cd $ucsc_dir
     download $BEDPARTITION_DOWNLOAD_URL "bedPartition"
@@ -820,7 +844,7 @@ if [ -z $(check_installed $jaffal_dir) ]; then
     echo "make_3_gene_fusion_table=\"$jaffal_dir/bin/make_3_gene_fusion_table\"" >> tools.groovy
     echo "extract_seq_from_fasta=\"$jaffal_dir/bin/extract_seq_from_fasta\"" >> tools.groovy
     echo "make_simple_read_table=\"$jaffal_dir/bin/make_simple_read_table\"" >> tools.groovy
-    echo "make_count_table=\"$jaaffal_dir/bin/make_count_table\"" >> tools.groovy
+    echo "make_count_table=\"$jaffal_dir/bin/make_count_table\"" >> tools.groovy
     echo "process_transcriptome_align_table=\"$jaffal_dir/bin/process_transcriptome_align_table\"" >> tools.groovy
     echo "R=\"$r_path\"" >> tools.groovy
     cp $jaffal_dir/known_fusions.txt $NANOTRANS_HOME/misc/human.known_fusions.txt
@@ -850,6 +874,7 @@ echo "export miniconda3_dir=${miniconda3_dir}" >> env.sh
 echo "export trimmomatic_dir=${trimmomatic_dir}" >> env.sh
 echo "export guppy_gpu_dir=${guppy_gpu_dir}" >> env.sh
 echo "export guppy_cpu_dir=${guppy_cpu_dir}" >> env.sh
+echo "export dorado_dir=${dorado_dir}" >> env.sh
 echo "export nanopolish_dir=${nanopolish_dir}" >> env.sh
 echo "export blast_dir=${blast_dir}" >> env.sh
 # echo "export seqtk_dir=${seqtk_dir}" >> env.sh
@@ -904,16 +929,18 @@ then
     echo "detected java_version: $java_version"
     if [ $(tidy_version "$java_version") -eq $(tidy_version "1.8") ]
     then
-	java_dir=$(dirname $java_bin)
-	echo "export java_dir=${java_dir}" >> env.sh
+        java_dir=$(dirname $java_bin)
+        echo "export java_dir=${java_dir}" >> env.sh
+        echo "export PATH=${java_dir}:$PATH" >> env.sh
         echo "You have the correct java version for NanoTrans! NanoTrans will take care of the configuration."
     else
-	echo "";
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-	echo "Your java version is not the version required by NanoTrans (java v1.8)!"
-        echo "Please manually set the directory path to java 1.8 executable on the last line of the env.sh file generated by this installation script!"
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-	echo "export java_dir=" >> env.sh
+        echo "";
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+        echo "Your java version is not the version required by NanoTrans (java v1.8)!"
+        echo "Please manually set the directory path to java 1.8 executable on the last two lines of the env.sh file generated by this installation script!"
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+        echo "export java_dir=" >> env.sh
+        echo "export PATH=${java_dir}:$PATH" >> env.sh
     fi
 fi
 

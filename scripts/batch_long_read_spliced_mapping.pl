@@ -151,7 +151,11 @@ foreach my $sample_id (@sample_table) {
 	# index final bam file
 	$local_time = localtime();
 	print "\n[$local_time] Indexing the mapping BAM file for sample $sample_id ..\n";
-	system("$samtools_dir/samtools index $sample_id.sort.bam");
+	my $bam_index_statu = system("$samtools_dir/samtools index $sample_id.sort.bam");
+	if ($bam_index_statu != 0) {
+		print("\n Failed to create a bai index. Try using a csi index. \n");
+		system("$samtools_dir/samtools index -c $sample_id.sort.bam");
+	}
 	# generate samtools mpileup 
 	# system("$samtools_dir/samtools mpileup -Q 0 -C 50 -q $min_mapping_quality -f $base_dir/$ref_dir/ref.genome.fa $sample_id.sort.bam |gzip -c >${sample_id}.mpileup.gz");	
 	# compute basic alignment statistics by samtools

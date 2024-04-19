@@ -13,9 +13,12 @@ master_sample_table="Master_Sample_Table.$batch_id.txt" # The master sample tabl
 wkdir=${PWD}
 outname=NanoTrans_Report_${batch_id}.html
 ##########################################################
-
+r_dir=$(which R)
+r_dir=${r_dir%/*}
 source $miniconda3_dir/activate  $build_dir/quarto_conda_env
+export PATH=${r_dir}:$PATH
 R_LIBS=$NANOTRANS_HOME/build/R_libs
+echo "Generating HTML report .."
 quarto render NanoTrans_Report.qmd -P "wkdir:${wkdir%/*}" -P "dataset:${batch_id}" --output ${outname}
 source $miniconda3_dir/deactivate
 
