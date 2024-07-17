@@ -4,7 +4,7 @@
   <img src="https://github.com/yjx1217/NanoTrans/blob/main/NanoTrans.logo.png" alt="NanoTrans_logo" width="408" height="132"/>
 </p>
 
-**NanoTrans: An integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing**
+**NanoTrans: an integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -40,15 +40,14 @@ Under the hood, a series of task-specific modules are provided to carry out the 
 
 
 ## Citation
-Ludong Yang, Xinxin Zhang, Fan Wang, Li Zhang, Jing Li, Jia-Xing Yue. (2024) NanoTrans: An integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing. BioRxiv, (doi: https://doi.org/10.1101/2022.11.29.518309)
+Ludong Yang, Xinxin Zhang, Fan Wang, Li Zhang, Jing Li, Jia-Xing Yue. (2024) NanoTrans: an integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing. Journal of Genetics and Genomics, (doi: https://doi.org/10.1016/j.jgg.2024.07.007) [LINK](https://www.sciencedirect.com/science/article/pii/S1673852724001838) 
 
 
 ## License
 NanoTrans itself is distributed under the MIT license but some of its dependencies might have more strict license for commercial use. Please check the licensing details of those dependencies.
 
 ## Release history
-* v0.0.1 Released on 2022/11/30
-* v0.0.2 Released on 2024/01/10
+
 * v1.0.0 Released on 2024/04/22
   * Module 00: `new` Add a new bash script into Module 00 to support basecalling with Dorado; Module 05: `improvement` Cancel to specify basecalling sequencing summary for nanopolish index when using Dorado as basecalling tool.
   * Module 02, 04, 05: `improvement` Support csi format index for BAM to adapt large chromosomes.
@@ -56,6 +55,8 @@ NanoTrans itself is distributed under the MIT license but some of its dependenci
   * Module 04: `improvement` Compress large files to reduce disk usage; `fix` Skip query isoforms that do not exist in the reference.
   * Module 07: `fix` Specify the R PATH used in installation step to fix the conflict of different versions of R.
   * Installation: `fix` Add Java to the ENV PATH to fix the java version bug when identifying fused genes; `improvement` Install tools from local by replacing the URL with a local path.
+* v0.0.2 Released on 2024/01/10
+* v0.0.1 Released on 2022/11/30
 
 
 ## Installation
