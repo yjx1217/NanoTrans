@@ -4,7 +4,7 @@
   <img src="https://github.com/yjx1217/NanoTrans/blob/main/NanoTrans.logo.png" alt="NanoTrans_logo" width="408" height="132"/>
 </p>
 
-**NanoTrans: an integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing**
+**NanoTrans: an integrated computational framework for comprehensive transcriptome analysis with Nanopore direct-RNA sequencing**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -40,7 +40,7 @@ Under the hood, a series of task-specific modules are provided to carry out the 
 
 
 ## Citation
-Ludong Yang, Xinxin Zhang, Fan Wang, Li Zhang, Jing Li, Jia-Xing Yue. (2024) NanoTrans: an integrated computational framework for comprehensive transcriptome analyses with Nanopore direct-RNA sequencing. Journal of Genetics and Genomics, (doi: https://doi.org/10.1016/j.jgg.2024.07.007) [LINK](https://www.sciencedirect.com/science/article/pii/S1673852724001838) 
+Ludong Yang, Xinxin Zhang, Fan Wang, Li Zhang, Jing Li, Jia-Xing Yue. (2024) NanoTrans: an integrated computational framework for comprehensive transcriptome analysis with Nanopore direct-RNA sequencing. Journal of Genetics and Genomics, (doi: https://doi.org/10.1016/j.jgg.2024.07.007) [LINK](https://www.sciencedirect.com/science/article/pii/S1673852724001838) 
 
 
 ## License
