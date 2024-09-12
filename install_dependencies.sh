@@ -198,7 +198,7 @@ fi
 
 # for reads preparation and preprocessing
 BLAST_VERSION="2.2.31" #
-BLAST_DOWNLOAD_URL="http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz"
+BLAST_DOWNLOAD_URL="https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz"
 
 # RMBLAST_VERSION="2.2.28" #
 # RMBLAST_DOWNLOAD_URL="http://ftp.ncbi.nlm.nih.gov/blast/executables/rmblast/${RMBLAST_VERSION}/ncbi-rmblastn-${RMBLAST_VERSION}-x64-linux.tar.gz"
@@ -253,7 +253,7 @@ NANOPOLISH_GITHUB_VERSION="07cb03d"
 FLAIR_VERSION="2.0.0" # 
 
 GFFREAD_VERSION="0.12.7" # released on 2021.07.23
-GFFREAD_DOWNLOAD_URL="http://ccb.jhu.edu/software/stringtie/dl/gffread-${GFFREAD_VERSION}.Linux_x86_64.tar.gz"
+GFFREAD_DOWNLOAD_URL="https://ccb.jhu.edu/software/stringtie/dl/gffread-${GFFREAD_VERSION}.Linux_x86_64.tar.gz"
 
 PICARD_VERSION="2.27.4" # released on 2022.06.30
 PICARD_DOWNLOAD_URL="https://github.com/broadinstitute/picard/releases/download/${PICARD_VERSION}/picard.jar"
