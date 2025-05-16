@@ -267,7 +267,7 @@ JAFFAL_DOWNLOAD_URL="https://github.com/Oshlack/JAFFA/releases/download/version-
 
 # UCSC Utilities
 BEDPARTITION_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedPartition"
-GTFTOGENEPRED_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred"
+GTFTOGENEPRED_DOWNLOAD_URL="http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v385/gtfToGenePred"
 BLAT_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/blat/blat"
 
 # pkgs used in generating HTML reports
