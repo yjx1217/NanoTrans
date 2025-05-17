@@ -266,9 +266,9 @@ JAFFAL_VERSION="2.3"
 JAFFAL_DOWNLOAD_URL="https://github.com/Oshlack/JAFFA/releases/download/version-${JAFFAL_VERSION}/JAFFA-version-${JAFFAL_VERSION}.tar.gz"
 
 # UCSC Utilities
-BEDPARTITION_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedPartition"
-GTFTOGENEPRED_DOWNLOAD_URL="http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v385/gtfToGenePred"
-BLAT_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/blat/blat"
+BEDPARTITION_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v479/bedPartition"
+GTFTOGENEPRED_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v385/gtfToGenePred"
+BLAT_DOWNLOAD_URL="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v385/blat/blat"
 
 # pkgs used in generating HTML reports
 QUARTO_VERSION="1.3.450"
